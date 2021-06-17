@@ -6,10 +6,18 @@
   "author": "Cedrik <cedrik.git@tryninja.io>",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "yarn test:node && yarn test:web",
-    "test:node": "jest --config jest.node.config.js",
-    "test:web": "jest --config jest.web.config.js"
+    "test:node": "jest",
+    "test:web": "jest --env=jsdom",
+    "lint": "tslint -p tsconfig.json",
+    "precommit": "npm run format && npm run lint && npm run build",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "axios": "^0.21.1"

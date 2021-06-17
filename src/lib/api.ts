@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import ApiConfigInterface from '../faces/api';
+import ApiConfigInterface from '../faces/lib/api';
 
 export default class Api {
   private trustedHosts = [
@@ -7,7 +7,6 @@ export default class Api {
     'https://gateway.amplify.host',
     'https://gateway-n1.amplify.host',
     'https://gateway-n2.amplify.host',
-    'https://gateway-n3.amplify.host',
   ];
 
   private _config!: ApiConfigInterface;

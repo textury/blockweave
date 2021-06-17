@@ -1,4 +1,4 @@
-import { LoggerInterface } from './utils/logger';
+import { LoggerInterface } from '../utils/logger';
 
 export default interface ApiConfigInterface {
   url?: string;

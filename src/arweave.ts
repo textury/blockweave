@@ -1,4 +1,4 @@
-import ApiConfigInterface from './faces/api';
+import ApiConfigInterface from './faces/lib/api';
 import Api from './lib/api';
 
 export default class Arweave {

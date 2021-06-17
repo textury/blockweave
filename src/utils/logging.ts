@@ -1,4 +1,4 @@
-import ApiConfigInterface from '../faces/api';
+import ApiConfigInterface from '../faces/lib/api';
 import { LoggerInterface } from '../faces/utils/logger';
 
 export default class Logging {
