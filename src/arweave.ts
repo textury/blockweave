@@ -1,11 +1,12 @@
 import ApiConfigInterface from './faces/lib/api';
 import Api from './lib/api';
+import { Network } from './lib/network';
 
 export default class Arweave {
-  public api;
+  public api: Api;
   public wallets;
   public transactions;
-  public network;
+  public network: Network;
   public ar;
   public silo;
   public chunks;
@@ -15,6 +16,7 @@ export default class Arweave {
 
   constructor(apiConfig: ApiConfigInterface = {}, trustedHosts?: string[]) {
     this.api = new Api(apiConfig, trustedHosts);
+    this.network = new Network(this.api);
   }
 }
 
