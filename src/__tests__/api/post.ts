@@ -9,16 +9,15 @@ describe('API POST', () => {
   });
 
   beforeEach(() => {
-    jest.spyOn(console, 'error')
+    jest.spyOn(console, 'error');
     // @ts-ignore jest.spyOn adds this functionallity
     console.error.mockImplementation(() => null);
   });
-  
+
   afterEach(() => {
     // @ts-ignore jest.spyOn adds this functionallity
-    console.error.mockRestore()
-  })
-  
+    console.error.mockRestore();
+  });
 
   test('/tx', async () => {
     const res = await ginst.api.post('/tx', 'fakedata');
@@ -27,7 +26,7 @@ describe('API POST', () => {
 
   test('/graphql', async () => {
     const txs = (
-      await ginst.api.post("graphql", {
+      await ginst.api.post('graphql', {
         query: `
       {
         transactions(
@@ -52,7 +51,7 @@ describe('API POST', () => {
   test('graphql on invalid gateway, should be replaced to an active one', async () => {
     const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', log: true });
     const txs = (
-      await inst.api.post("graphql", {
+      await inst.api.post('graphql', {
         query: `
       {
         transactions(
@@ -79,8 +78,9 @@ describe('API POST', () => {
     const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', log: true }, ['https://hasdhfhasdf.com']);
     jest.spyOn(axios, 'post').mockRejectedValue(new Error('error'));
 
-    await expect(inst.api.post('graphql', {
-      query: `
+    await expect(
+      inst.api.post('graphql', {
+        query: `
     {
       transactions(
         tags: [
@@ -94,7 +94,8 @@ describe('API POST', () => {
         }
       }
     }`,
-    })).rejects.toThrow();
+      }),
+    ).rejects.toThrow();
     expect(inst.api.config.host).toBe('hasdfhahsdflkajsdf.com');
   });
 
@@ -102,8 +103,9 @@ describe('API POST', () => {
     const inst = new Arweave({ url: 'https://localhost:9876', log: true });
     jest.spyOn(axios, 'post').mockRejectedValue(new Error('error'));
 
-    await expect(inst.api.post('graphql', {
-      query: `
+    await expect(
+      inst.api.post('graphql', {
+        query: `
     {
       transactions(
         tags: [
@@ -117,7 +119,8 @@ describe('API POST', () => {
         }
       }
     }`,
-    })).rejects.toThrow();
+      }),
+    ).rejects.toThrow();
     expect(inst.api.config.host).toBe('localhost');
   });
 });

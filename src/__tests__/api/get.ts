@@ -3,22 +3,21 @@ import Arweave from '../../arweave';
 
 describe('API GET', () => {
   let ginst: Arweave;
-  
+
   beforeAll(() => {
     ginst = new Arweave({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
-    jest.spyOn(console, 'error')
+    jest.spyOn(console, 'error');
     // @ts-ignore jest.spyOn adds this functionallity
     console.error.mockImplementation(() => null);
   });
-  
+
   afterEach(() => {
     // @ts-ignore jest.spyOn adds this functionallity
-    console.error.mockRestore()
-  })
-  
+    console.error.mockRestore();
+  });
 
   test('/info', async () => {
     const res = await ginst.api.get('/info');
