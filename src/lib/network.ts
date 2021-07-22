@@ -8,7 +8,6 @@ export class Network {
     this.api = api;
   }
 
-  
   /**
    * Get network info
    * @returns Promise which resolves in the network info object of the current gateway
@@ -18,7 +17,6 @@ export class Network {
     return res.data;
   }
 
-  
   /**
    * Get a list of peers
    * @returns Promise which resolves on an array of peers connected to the current gateway
