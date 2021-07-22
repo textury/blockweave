@@ -4,9 +4,8 @@ import ApiConfigInterface from '../faces/lib/api';
 export default class Api {
   private trustedHosts = [
     'https://arweave.net',
-    'https://gateway.amplify.host',
-    'https://gateway-n1.amplify.host',
-    'https://gateway-n2.amplify.host',
+    'https://amp-gw.online',
+    'https://gateway.amplify.host'
   ];
 
   private _config!: ApiConfigInterface;
@@ -20,22 +19,71 @@ export default class Api {
     this.trustedHosts = trustedHosts || this.trustedHosts;
   }
 
+  
+  /**
+   * Do a GET request to the selected gateway
+   * @param  {string} endpoint - API endpoint
+   * @param  {AxiosRequestConfig} config? - Axios configuration
+   * @returns {AxiosResponse} - Promise which resolves on the axios response
+   */
   public async get(endpoint: string, config?: AxiosRequestConfig): Promise<AxiosResponse> {
-    return this.doRequest(endpoint, config, 'get');
+    return this.doRequest(endpoint, 'get', config);
   }
 
+  
+  /**
+   * Do a POST request to the selected gateway
+   * @param  {string} endpoint - API endpoint
+   * @param  {Buffer|string|object} body - Body content to post
+   * @param  {AxiosRequestConfig} config? - Axios configuration
+   * @returns {AxiosResponse} - Promise which resolves on the axios response
+   */
   public async post(
     endpoint: string,
     body: Buffer | string | object,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse> {
-    return this.doRequest(endpoint, config, 'post', body);
+    return this.doRequest(endpoint, 'post', config, body);
   }
+  /**
+   * Get an AxiosInstance with the base configuration setup to fire off
+   * a request to the network.
+   * @returns {AxiosInstance}
+   */
+   public request(): AxiosInstance {
+    const instance = axios.create({
+      baseURL: `${this.config.url}`,
+      timeout: this.config.timeout,
+      maxContentLength: 1024 * 1024 * 512,
+    });
 
+    if (this.config.log) {
+      instance.interceptors.request.use((request) => {
+        this.config.logger!.log(`Requesting: ${request.baseURL}/${request.url}`);
+        return request;
+      });
+
+      instance.interceptors.response.use((response) => {
+        this.config.logger!.log(`Response:   ${response.config.url} - ${response.status}`);
+        return response;
+      });
+    }
+
+    return instance;
+  }
+   
+  /**
+   * 
+   * @param  {string} endpoint - API endpoint
+   * @param  {AxiosRequestConfig} config - Axios config
+   * @param  {'get'|'post'} type
+   * @param  {Buffer|string|object} body?
+   * @returns {AxiosResponse} - Promise which resolves on the axios response
+   */
   private async doRequest(
     endpoint: string,
-    config: AxiosRequestConfig,
     type: 'get' | 'post',
+    config?: AxiosRequestConfig,
     body?: Buffer | string | object,
   ): Promise<AxiosResponse> {
     const previous = this.config;
@@ -46,7 +94,6 @@ export default class Api {
     const run = async () => {
       try {
         this._config = this.mergeDefaults({ url: tmpTrusted.splice(0, 1)[0] });
-
         endpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
 
         if (type === 'get') {
@@ -69,28 +116,6 @@ export default class Api {
     };
 
     return run();
-  }
-
-  public request(): AxiosInstance {
-    const instance = axios.create({
-      baseURL: `${this.config.url}`,
-      timeout: this.config.timeout,
-      maxContentLength: 1024 * 1024 * 512,
-    });
-
-    if (this.config.log) {
-      instance.interceptors.request.use((request) => {
-        this.config.logger!.log(`Requesting: ${request.baseURL}/${request.url}`);
-        return request;
-      });
-
-      instance.interceptors.response.use((response) => {
-        this.config.logger!.log(`Response:   ${response.config.url} - ${response.status}`);
-        return response;
-      });
-    }
-
-    return instance;
   }
 
   private mergeDefaults(config: ApiConfigInterface) {
