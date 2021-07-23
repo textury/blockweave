@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "arconnect": "^0.2.9",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",

@@ -3,7 +3,7 @@ JavaScript/TypeScript SDK for interacting with the Arweave network
 
 **API differences with ArweaveJS from the core team:**
 
-**Arweave.init()**
+**Arweave.init() / API**
 - `Arweave.init()` has been replaced to `new Arweave()`.
 - `init()` can be initialized without params.
 - `init()` has a new option called `url` which allows us to do `Arweave.init({url: 'https://arweave.net'})` instead of using `protocol`, `host`, `port` separately.
@@ -12,3 +12,6 @@ JavaScript/TypeScript SDK for interacting with the Arweave network
 - `api.getConfig()` has been replaced to `api.config`.
 - `config.logging` has been replaced to `config.log`.
 - `config.logger` was expecting the `.log` function of loggers, this has been replace to receive the entire object (ex: `config.logger = console`).
+
+**Arweave Wallets**
+- `wallets.getLastTransactionID` has been renamed to `wallets.getLastTxId`.
