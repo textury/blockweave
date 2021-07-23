@@ -2,10 +2,10 @@ import axios from 'axios';
 import Arweave from '../../arweave';
 
 describe('API GET', () => {
-  let ginst: Arweave;
+  let arweave: Arweave;
 
   beforeAll(() => {
-    ginst = new Arweave({ url: 'https://arweave.net' });
+    arweave = new Arweave({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('API GET', () => {
   });
 
   test('/info', async () => {
-    const res = await ginst.api.get('/info');
+    const res = await arweave.api.get('/info');
 
     expect(res.status).toBe(200);
     expect(res.data).toEqual({
@@ -37,7 +37,7 @@ describe('API GET', () => {
   });
 
   test('info', async () => {
-    const res = await ginst.api.get('info');
+    const res = await arweave.api.get('info');
 
     expect(res.status).toBe(200);
     expect(res.data).toEqual({

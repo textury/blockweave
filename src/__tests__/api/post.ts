@@ -2,10 +2,10 @@ import axios from 'axios';
 import Arweave from '../../arweave';
 
 describe('API POST', () => {
-  let ginst: Arweave;
+  let arweave: Arweave;
 
   beforeAll(() => {
-    ginst = new Arweave({ url: 'https://arweave.net' });
+    arweave = new Arweave({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -20,13 +20,13 @@ describe('API POST', () => {
   });
 
   test('/tx', async () => {
-    const res = await ginst.api.post('/tx', 'fakedata');
+    const res = await arweave.api.post('/tx', 'fakedata');
     expect(res.status).toBe(400);
   });
 
   test('/graphql', async () => {
     const txs = (
-      await ginst.api.post('graphql', {
+      await arweave.api.post('graphql', {
         query: `
       {
         transactions(
