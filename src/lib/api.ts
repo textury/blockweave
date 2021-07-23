@@ -2,7 +2,12 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import ApiConfigInterface from '../faces/lib/api';
 
 export default class Api {
-  private trustedHosts = ['http://localhost:1984', 'https://arweave.net', 'https://amp-gw.online', 'https://gateway.amplify.host'];
+  private trustedHosts = [
+    'http://localhost:1984',
+    'https://arweave.net',
+    'https://amp-gw.online',
+    'https://gateway.amplify.host',
+  ];
 
   private _config!: ApiConfigInterface;
 

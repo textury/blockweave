@@ -1,10 +1,9 @@
-import { BigNumber } from "bignumber.js";
+import { BigNumber } from 'bignumber.js';
 
 /**
  * Utility to convert AR to Winston and vice versa.
  */
 export default class Ar {
-
   /**
    * Convert Winston to AR.
    * @param  {string} winstonString
@@ -13,10 +12,7 @@ export default class Ar {
    * @param  {boolean} trim - Default is true
    * @returns {string} - The AR as string
    */
-  public winstonToAr(
-    winstonString: string,
-    { formatted = false, decimals = 12, trim = true } = {}
-  ): string {
+  public winstonToAr(winstonString: string, { formatted = false, decimals = 12, trim = true } = {}): string {
     const n = this.stringToBigNum(winstonString, decimals).shiftedBy(-12);
     return formatted ? n.toFormat(decimals) : n.toFixed(decimals);
   }
@@ -44,10 +40,7 @@ export default class Ar {
     return a.isLessThan(b);
   }
 
-  public isGreaterThan(
-    winstonStringA: string,
-    winstonStringB: string
-  ): boolean {
+  public isGreaterThan(winstonStringA: string, winstonStringB: string): boolean {
     const a = this.stringToBigNum(winstonStringA);
     const b = this.stringToBigNum(winstonStringB);
 
@@ -67,10 +60,7 @@ export default class Ar {
     return a.minus(winstonStringB).toFixed(0);
   }
 
-  private stringToBigNum(
-    stringValue: string,
-    decimalPlaces: number = 12
-  ): BigNumber {
+  private stringToBigNum(stringValue: string, decimalPlaces: number = 12): BigNumber {
     const instance = BigNumber.clone({ DECIMAL_PLACES: decimalPlaces });
     return new instance(stringValue);
   }
