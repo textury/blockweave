@@ -4,14 +4,18 @@ import { b64UrlDecode, b64UrlEncode, bufferTob64 } from '../utils/buffer';
 import Api from './api';
 import * as B64js from '../utils/b64';
 import Cache from '../utils/cache';
+import { CacheInterface } from '../faces/utils/cache';
 
 export default class Wallets {
   private api: Api;
   private crypto: CryptoInterface;
+  private cache: CacheInterface;
 
-  constructor(api: Api, crypto: CryptoInterface) {
+  constructor(api: Api, crypto: CryptoInterface, cache?: CacheInterface) {
+    this.api = api;
     this.api = api;
     this.crypto = crypto;
+    this.cache = cache;
   }
 
   /**
@@ -77,6 +81,12 @@ export default class Wallets {
   }
 
   public async ownerToAddress(owner: string): Promise<string> {
+    if(this.cache) {
+      const cache = await this.cache.get(`ownerToAddress-${owner}`);
+      if(cache) {
+        return cache;
+      }
+    }
     return b64UrlEncode(bufferTob64(await this.crypto.hash(new Uint8Array(B64js.toByteArray(b64UrlDecode(owner))))));
   }
 }
