@@ -1,6 +1,7 @@
+import { BaseObjectInterface } from '../utils/baseObject';
 import { TagInterface } from './tag';
 
-export interface TransactionInterface {
+export interface TransactionInterface extends BaseObjectInterface {
   format: number;
   id: string;
   lastTx: string;
