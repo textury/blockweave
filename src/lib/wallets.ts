@@ -3,15 +3,15 @@ import CryptoInterface from '../faces/utils/crypto';
 import { b64UrlDecode, b64UrlEncode, bufferTob64 } from '../utils/buffer';
 import Api from './api';
 import * as B64js from '../utils/b64';
-import Cache from '../utils/cache';
-import { CacheInterface } from '../faces/utils/cache';
+import ArCache from '../utils/arCache';
+import { ArCacheInterface } from '../faces/utils/arCache';
 
 export default class Wallets {
   private api: Api;
   private crypto: CryptoInterface;
-  private cache: CacheInterface;
+  private cache: ArCacheInterface;
 
-  constructor(api: Api, crypto: CryptoInterface, cache?: CacheInterface) {
+  constructor(api: Api, crypto: CryptoInterface, cache?: ArCacheInterface) {
     this.api = api;
     this.api = api;
     this.crypto = crypto;
@@ -24,10 +24,16 @@ export default class Wallets {
    * @returns {Promise<string>} - Promise which resolves on a winston string balance.
    */
   public async getBalance(address: string): Promise<string> {
-    const res = await this.api.get(`wallet/${address}/balance`, {
-      transformResponse: [(data): string => data],
-    });
-    return res.data;
+    let data = this.cache && await this.cache.get(`balance-${address}`) as string;
+    if(!data) {
+      const res = await this.api.get(`wallet/${address}/balance`, {
+        transformResponse: (d): string => d,
+      });
+      data = res.data;
+      this.cache.set(`balance-${address}`, data, 2 * 60 * 1000);
+    }
+
+    return data;
   }
 
   /**
@@ -36,8 +42,13 @@ export default class Wallets {
    * @returns {Promise<string>} - Promise which resolves on a transaction id as string.
    */
   public async getLastTxId(address: string): Promise<string> {
-    const res = await this.api.get(`wallet/${address}/last_tx`);
-    return res.data;
+    let data: string = this.cache && await this.cache.get(`lastTxId-${address}`);
+    if(!data) {
+      const res = await this.api.get(`wallet/${address}/last_tx`);
+      data = res.data;
+      this.cache.set(`lastTxId-${address}`, data, 2 * 60 * 1000);
+    }
+    return data;
   }
 
   /**
@@ -81,12 +92,12 @@ export default class Wallets {
   }
 
   public async ownerToAddress(owner: string): Promise<string> {
-    if(this.cache) {
-      const cache = await this.cache.get(`ownerToAddress-${owner}`);
-      if(cache) {
-        return cache;
-      }
+    let res: string = this.cache && await this.cache.get(`ownerToAddress-${owner}`);
+    if(!res) {
+      res = b64UrlEncode(bufferTob64(await this.crypto.hash(new Uint8Array(B64js.toByteArray(b64UrlDecode(owner))))));
+      this.cache && this.cache.set(`ownerToAddress-${owner}`, res);
     }
-    return b64UrlEncode(bufferTob64(await this.crypto.hash(new Uint8Array(B64js.toByteArray(b64UrlDecode(owner))))));
+
+    return res;
   }
 }

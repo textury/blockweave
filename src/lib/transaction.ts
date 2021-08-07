@@ -70,7 +70,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
    * @param {Tag[]} tags
    * @param {string} signature
    */
-  public setSignature({id, owner, tags, signature}: {id: string, owner: string, tags: TagInterface[], signature: string}) {
+  public setSignature({id, owner, tags, signature}: Partial<TransactionInterface>) {
     this.id = id;
     this.owner = owner;
     if(tags) {
@@ -127,7 +127,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
 
   public async getSignatureData(): Promise<Uint8Array> {
     switch (this.format) {
-      case 1:
+      case 1: {
         const tags = this.tags.reduce((accumulator: Uint8Array, tag: Tag) => {
           return concatBuffers([
             accumulator,
@@ -145,13 +145,14 @@ export default class Transaction extends BaseObject implements TransactionInterf
           this.get("last_tx", { decode: true, string: false }),
           tags,
         ]);
-      case 2:
+      }
+      case 2: {
         await this.prepareChunks(this.data);
 
         const tagList = this.tags.map((tag) => [
           tag.get("name", { decode: true, string: false }),
           tag.get("value", { decode: true, string: false }),
-        ]);
+        ]) as [Uint8Array, Uint8Array][];
 
         return await deepHash([
           stringToBuffer(this.format.toString()),
@@ -160,12 +161,14 @@ export default class Transaction extends BaseObject implements TransactionInterf
           stringToBuffer(this.quantity),
           stringToBuffer(this.reward),
           this.get("last_tx", { decode: true, string: false }),
-          tagList as [Uint8Array, Uint8Array][],
+          tagList,
           stringToBuffer(this.data_size),
           this.get("data_root", { decode: true, string: false }),
         ]);
-      default:
+      }
+      default: {
         throw new Error(`Unexpected transaction format: ${this.format}`);
+      }
     }
   }
 

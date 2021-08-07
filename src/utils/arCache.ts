@@ -1,9 +1,9 @@
-import { CacheInterface } from "../faces/utils/cache";
+import { ArCacheInterface } from "../faces/utils/arCache";
 
 /**
  * Implementation of a simple in-memory cache.
  */
-export default class Cache implements CacheInterface {
+export default class ArCache implements ArCacheInterface {
   private _cache: {
     [key: string]: {
       ttl: number;
@@ -39,8 +39,9 @@ export default class Cache implements CacheInterface {
    * @param  {string} key
    * @param  {any} value
    * @param {number} ttl - Time to live in seconds, 0 or null means never expires.
+   * @returns {Promise<void>}
    */
-  public put(key: string, value: any, ttl?: number) {
+  public async set(key: string, value: any, ttl?: number): Promise<void> {
     if (this.memSize > this._maxMemSize) {
       this.makeRoom();
     }
@@ -59,10 +60,10 @@ export default class Cache implements CacheInterface {
   }
   /**
    * Get a specific item from the cache.
-   * @param  {string} key
+   * @param  {string} key 
    * @returns {any}
    */
-  public get(key: string): any {
+  public async get(key: string): Promise<any> {
     const item = this._cache[key];
     if (item) {
       if(this.hasExpired(key)) {

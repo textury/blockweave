@@ -1,6 +1,8 @@
 import axios from 'axios';
 import Arweave from '../../arweave';
 
+jest.setTimeout(20000);
+
 describe('API POST', () => {
   let arweave: Arweave;
 

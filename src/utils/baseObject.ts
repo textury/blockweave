@@ -14,7 +14,7 @@ export class BaseObject implements BaseObjectInterface {
 
     // Handle fields that are Uint8Array.
     // To maintain compatibility, we encode them to b64url, only if the decode option is not specified.
-    if(this[field] instanceof Uint8Array) {
+    if(this[field].constructor.name === 'Uint8Array') {
       if(options && options.decode && options.string) {
         return bufferToString(this[field]);
       }
@@ -31,5 +31,7 @@ export class BaseObject implements BaseObjectInterface {
       }
       return b64UrlToBuffer(this[field]);
     }
+
+    return this[field];
   }
 }
