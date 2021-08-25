@@ -4,7 +4,7 @@ import { TagInterface } from './tag';
 export interface TransactionInterface extends BaseObjectInterface {
   format: number;
   id: string;
-  lastTx: string;
+  last_tx: string;
   owner: string;
   tags: TagInterface[];
   target: string;
@@ -12,6 +12,6 @@ export interface TransactionInterface extends BaseObjectInterface {
   data: Uint8Array;
   reward: string;
   signature: string;
-  dataSize: string;
-  dataRoot: string;
+  data_size: string;
+  data_root: string;
 }

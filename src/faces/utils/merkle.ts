@@ -6,7 +6,7 @@ export interface Chunk {
 
 interface BranchNode {
   readonly id: Uint8Array;
-  readonly type: "branch";
+  readonly type: 'branch';
   readonly byteRange: number;
   readonly maxByteRange: number;
   readonly leftChild?: MerkleNode;
@@ -16,7 +16,7 @@ interface BranchNode {
 export interface LeafNode {
   readonly id: Uint8Array;
   readonly dataHash: Uint8Array;
-  readonly type: "leaf";
+  readonly type: 'leaf';
 
   readonly minByteRange: number;
   readonly maxByteRange: number;

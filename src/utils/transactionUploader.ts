@@ -1,9 +1,9 @@
-import Transaction from "../lib/transaction";
-import Api from "../lib/api";
-import { b64UrlToBuffer } from "./buffer";
-import { SerializedUploader } from "../faces/utils/transactionUploader";
-import Merkle from "./merkle";
-import { AxiosResponse } from "axios";
+import Transaction from '../lib/transaction';
+import Api from '../lib/api';
+import { b64UrlToBuffer } from './buffer';
+import { SerializedUploader } from '../faces/utils/transactionUploader';
+import Merkle from './merkle';
+import { AxiosResponse } from 'axios';
 
 // Maximum amount of chunks we will upload in the body.
 const MAX_CHUNKS_IN_BODY = 1;
@@ -17,13 +17,13 @@ const MAX_CHUNKS_IN_BODY = 1;
 
 // Errors from /chunk we should never try and continue on.
 const FATAL_CHUNK_UPLOAD_ERRORS = [
-  "invalid_json",
-  "chunk_too_big",
-  "data_path_too_big",
-  "offset_too_big",
-  "data_size_too_big",
-  "chunk_proof_ratio_not_attractive",
-  "invalid_proof",
+  'invalid_json',
+  'chunk_too_big',
+  'data_path_too_big',
+  'offset_too_big',
+  'data_size_too_big',
+  'chunk_proof_ratio_not_attractive',
+  'invalid_proof',
 ];
 
 // Amount we will delay on receiving an error response but do want to continue.
@@ -38,15 +38,12 @@ export class TransactionUploader {
   private totalErrors = 0; // Not serialized.
 
   public lastResponseStatus: number = 0;
-  public lastResponseError: string = "";
+  public lastResponseError: string = '';
 
   private merkle: Merkle;
 
   public get isComplete(): boolean {
-    return (
-      this.txPosted &&
-      this.chunkIndex === this.transaction.chunks!.chunks.length
-    );
+    return this.txPosted && this.chunkIndex === this.transaction.chunks!.chunks.length;
   }
 
   public get totalChunks(): number {
@@ -70,9 +67,7 @@ export class TransactionUploader {
     }
     // Make a copy of transaction, zeroing the data so we can serialize.
     this.data = transaction.data;
-    this.transaction = new Transaction(
-      Object.assign({}, transaction, { data: new Uint8Array(0) })
-    );
+    this.transaction = new Transaction(Object.assign({}, transaction, { data: new Uint8Array(0) }));
 
     this.merkle = new Merkle();
   }
@@ -88,7 +83,7 @@ export class TransactionUploader {
       throw new Error(`Upload is already complete`);
     }
 
-    if (this.lastResponseError !== "") {
+    if (this.lastResponseError !== '') {
       this.totalErrors++;
     } else {
       this.totalErrors = 0;
@@ -97,18 +92,11 @@ export class TransactionUploader {
     // We have been trying for about an hour receiving an
     // error every time, so eventually bail.
     if (this.totalErrors === 100) {
-      throw new Error(
-        `Unable to complete upload: ${this.lastResponseStatus}: ${this.lastResponseError}`
-      );
+      throw new Error(`Unable to complete upload: ${this.lastResponseStatus}: ${this.lastResponseError}`);
     }
 
     let delay =
-      this.lastResponseError === ""
-        ? 0
-        : Math.max(
-            this.lastRequestTimeEnd + ERROR_DELAY - Date.now(),
-            ERROR_DELAY
-          );
+      this.lastResponseError === '' ? 0 : Math.max(this.lastRequestTimeEnd + ERROR_DELAY - Date.now(), ERROR_DELAY);
 
     if (delay > 0) {
       // Jitter delay bcoz networks, subtract up to 30% from 40 seconds
@@ -116,7 +104,7 @@ export class TransactionUploader {
       await new Promise((res) => setTimeout(res, delay));
     }
 
-    this.lastResponseError = "";
+    this.lastResponseError = '';
 
     if (!this.txPosted) {
       await this.postTransaction();
@@ -130,19 +118,17 @@ export class TransactionUploader {
       parseInt(chunk.offset, 10),
       0,
       parseInt(chunk.data_size, 10),
-      b64UrlToBuffer(chunk.data_path)
+      b64UrlToBuffer(chunk.data_path),
     );
     if (!chunkOk) {
       throw new Error(`Unable to validate chunk ${this.chunkIndex}`);
     }
 
     // Catch network errors and turn them into objects with status -1 and an error message.
-    const res = await this.api
-      .post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data))
-      .catch((e) => {
-        console.error(e.message);
-        return { status: -1, data: { error: e.message } };
-      });
+    const res = await this.api.post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data)).catch((e) => {
+      console.error(e.message);
+      return { status: -1, data: { error: e.message } };
+    });
 
     this.lastRequestTimeEnd = Date.now();
     this.lastResponseStatus = res.status;
@@ -153,9 +139,7 @@ export class TransactionUploader {
       // @ts-ignore
       this.lastResponseError = res.data || res.statusText || '';
       if (FATAL_CHUNK_UPLOAD_ERRORS.includes(this.lastResponseError)) {
-        throw new Error(
-          `Fatal error uploading chunk ${this.chunkIndex}: ${this.lastResponseError}`
-        );
+        throw new Error(`Fatal error uploading chunk ${this.chunkIndex}: ${this.lastResponseError}`);
       }
     }
   }
@@ -170,23 +154,16 @@ export class TransactionUploader {
   public static async fromSerialized(
     api: Api,
     serialized: SerializedUploader,
-    data: Uint8Array
+    data: Uint8Array,
   ): Promise<TransactionUploader> {
-    if (
-      !serialized ||
-      typeof serialized.chunkIndex !== "number" ||
-      typeof serialized.transaction !== "object"
-    ) {
+    if (!serialized || typeof serialized.chunkIndex !== 'number' || typeof serialized.transaction !== 'object') {
       throw new Error(`Serialized object does not match expected format.`);
     }
 
     // Everything looks ok, reconstruct the TransactionUpload,
     // prepare the chunks again and verify the data_root matches
 
-    const upload = new TransactionUploader(
-      api,
-      new Transaction(serialized.transaction)
-    );
+    const upload = new TransactionUploader(api, new Transaction(serialized.transaction));
 
     // Copy the serialized upload information, and data passed in.
     upload.chunkIndex = serialized.chunkIndex;
@@ -212,10 +189,7 @@ export class TransactionUploader {
    * @param id
    * @param data
    */
-  public static async fromTransactionId(
-    api: Api,
-    id: string
-  ): Promise<SerializedUploader> {
+  public static async fromTransactionId(api: Api, id: string): Promise<SerializedUploader> {
     const resp = await api.get(`tx/${id}`);
 
     if (resp.status !== 200) {
@@ -228,7 +202,7 @@ export class TransactionUploader {
     const serialized: SerializedUploader = {
       txPosted: true,
       chunkIndex: 0,
-      lastResponseError: "",
+      lastResponseError: '',
       lastRequestTimeEnd: 0,
       lastResponseStatus: 0,
       transaction,
@@ -257,8 +231,8 @@ export class TransactionUploader {
       // Post the transaction with data.
       this.transaction.data = this.data;
       try {
-        res = await this.api.post(`tx`, this.transaction)
-      }catch(e) {
+        res = await this.api.post(`tx`, this.transaction);
+      } catch (e) {
         console.error(e);
         res = { status: -1, data: { error: e.message } };
       }
@@ -274,10 +248,8 @@ export class TransactionUploader {
         return;
       }
       // @ts-ignore
-      this.lastResponseError = res.data || res.statusText || "";
-      throw new Error(
-        `Unable to upload transaction: ${res.status}, ${this.lastResponseError}`
-      );
+      this.lastResponseError = res.data || res.statusText || '';
+      throw new Error(`Unable to upload transaction: ${res.status}, ${this.lastResponseError}`);
     }
 
     // Post the transaction with no data.
@@ -285,10 +257,8 @@ export class TransactionUploader {
     this.lastRequestTimeEnd = Date.now();
     this.lastResponseStatus = res.status;
     if (!(res.status >= 200 && res.status < 300)) {
-      this.lastResponseError = res.data || res.statusText || "";
-      throw new Error(
-        `Unable to upload transaction: ${res.status}, ${this.lastResponseError}`
-      );
+      this.lastResponseError = res.data || res.statusText || '';
+      throw new Error(`Unable to upload transaction: ${res.status}, ${this.lastResponseError}`);
     }
     this.txPosted = true;
   }

@@ -1,13 +1,13 @@
 import axios from 'axios';
 import Arweave from '../../arweave';
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 
 describe('API POST', () => {
   let arweave: Arweave;
 
   beforeAll(() => {
-    arweave = new Arweave({ url: 'https://arweave.net' });
+    arweave = new Arweave({ url: 'https://arweave.net', log: true });
   });
 
   beforeEach(() => {
@@ -19,11 +19,6 @@ describe('API POST', () => {
   afterEach(() => {
     // @ts-ignore jest.spyOn adds this functionallity
     console.error.mockRestore();
-  });
-
-  test('/tx', async () => {
-    const res = await arweave.api.post('/tx', 'fakedata');
-    expect(res.status).toBe(400);
   });
 
   test('/graphql', async () => {

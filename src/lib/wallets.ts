@@ -24,8 +24,8 @@ export default class Wallets {
    * @returns {Promise<string>} - Promise which resolves on a winston string balance.
    */
   public async getBalance(address: string): Promise<string> {
-    let data = this.cache && await this.cache.get(`balance-${address}`) as string;
-    if(!data) {
+    let data = this.cache && ((await this.cache.get(`balance-${address}`)) as string);
+    if (!data) {
       const res = await this.api.get(`wallet/${address}/balance`, {
         transformResponse: (d): string => d,
       });
@@ -42,8 +42,8 @@ export default class Wallets {
    * @returns {Promise<string>} - Promise which resolves on a transaction id as string.
    */
   public async getLastTxId(address: string): Promise<string> {
-    let data: string = this.cache && await this.cache.get(`lastTxId-${address}`);
-    if(!data) {
+    let data: string = this.cache && (await this.cache.get(`lastTxId-${address}`));
+    if (!data) {
       const res = await this.api.get(`wallet/${address}/last_tx`);
       data = res.data;
       this.cache.set(`lastTxId-${address}`, data, 2 * 60 * 1000);
@@ -92,8 +92,8 @@ export default class Wallets {
   }
 
   public async ownerToAddress(owner: string): Promise<string> {
-    let res: string = this.cache && await this.cache.get(`ownerToAddress-${owner}`);
-    if(!res) {
+    let res: string = this.cache && (await this.cache.get(`ownerToAddress-${owner}`));
+    if (!res) {
       res = b64UrlEncode(bufferTob64(await this.crypto.hash(new Uint8Array(B64js.toByteArray(b64UrlDecode(owner))))));
       this.cache && this.cache.set(`ownerToAddress-${owner}`, res);
     }

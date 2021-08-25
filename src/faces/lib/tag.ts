@@ -1,4 +1,4 @@
-import { BaseObjectInterface } from "../utils/baseObject";
+import { BaseObjectInterface } from '../utils/baseObject';
 
 export interface TagInterface extends BaseObjectInterface {
   name: string;

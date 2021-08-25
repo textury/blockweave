@@ -8,7 +8,10 @@ export default class CryptoDriver implements CryptoInterface {
   public driver: SubtleCrypto;
 
   constructor() {
-    this.driver = crypto?.subtle;
+    if (typeof crypto !== 'undefined') {
+      this.driver = crypto.subtle;
+    }
+
     if (!this.driver) {
       const crypto = require('crypto').webcrypto;
       this.driver = crypto.subtle;

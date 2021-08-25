@@ -1,6 +1,6 @@
-import { TransactionChunkResponseInterface, TransactionOffsetResponseInterface } from "../faces/lib/chunks";
-import { b64UrlToBuffer } from "../utils/buffer";
-import Api from "./api";
+import { TransactionChunkResponseInterface, TransactionOffsetResponseInterface } from '../faces/lib/chunks';
+import { b64UrlToBuffer } from '../utils/buffer';
+import Api from './api';
 
 export default class Chunks {
   private api: Api;
@@ -11,18 +11,22 @@ export default class Chunks {
 
   public async getTransactionOffset(id: string): Promise<TransactionOffsetResponseInterface> {
     const resp = await this.api.get(`tx/${id}/offset`);
-    if(resp.status === 200) {
+    if (resp.status === 200) {
       return resp.data;
     }
-    throw new Error(`Unable to get the transaction offset: ${resp.data? resp.data.error || resp.statusText : 'unknown'}`);
+    throw new Error(
+      `Unable to get the transaction offset: ${resp.data ? resp.data.error || resp.statusText : 'unknown'}`,
+    );
   }
 
   public async getChunk(offset: string | number | BigInt): Promise<TransactionChunkResponseInterface> {
     const resp = await this.api.get(`${offset}/chunk`);
-    if(resp.status === 200) {
+    if (resp.status === 200) {
       return resp.data;
     }
-    throw new Error(`Unable to get the transaction chunk: ${resp.data? resp.data.error || resp.statusText : 'unknown'}`);
+    throw new Error(
+      `Unable to get the transaction chunk: ${resp.data ? resp.data.error || resp.statusText : 'unknown'}`,
+    );
   }
 
   public async getChunkData(offset: string | number | BigInt): Promise<Uint8Array> {
@@ -45,7 +49,7 @@ export default class Chunks {
     const data = new Uint8Array(size);
     let byte = 0;
 
-    while(startOffset + byte < endOffset) {
+    while (startOffset + byte < endOffset) {
       const chunkData = await this.getChunkData(startOffset + byte);
       data.set(chunkData, byte);
       byte += chunkData.length;

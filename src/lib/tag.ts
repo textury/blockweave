@@ -1,9 +1,9 @@
-import { BaseObject } from "../utils/baseObject";
+import { BaseObject } from '../utils/baseObject';
 
 export class Tag extends BaseObject {
   readonly name: string;
   readonly value: string;
-  
+
   constructor(name: string, value: string, decode: boolean = false) {
     super();
 

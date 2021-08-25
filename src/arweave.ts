@@ -30,7 +30,7 @@ export default class Arweave {
   constructor(apiConfig: ApiConfigInterface = {}, trustedHosts?: string[]) {
     const cache = new ArCache();
 
-    if(apiConfig.log && !apiConfig.logger) {
+    if (apiConfig.log && !apiConfig.logger) {
       apiConfig.logger = new Logging(apiConfig);
     }
 
@@ -42,60 +42,56 @@ export default class Arweave {
     this.transactions = new Transactions(this.api, Arweave.crypto, this.chunks, cache);
   }
 
-  public async createTransaction(attributes: Partial<CreateTransactionInterface>, jwk?: JWKInterface | 'use_wallet'): Promise<Transaction> {
+  public async createTransaction(
+    attributes: Partial<CreateTransactionInterface>,
+    jwk?: JWKInterface | 'use_wallet',
+  ): Promise<Transaction> {
     const transaction: Partial<CreateTransactionInterface> = {};
     Object.assign(transaction, attributes);
 
-    if(!attributes.data && (!attributes.target && !attributes.quantity)) {
+    if (!attributes.data && !attributes.target && !attributes.quantity) {
       throw new Error('A new Arweave transaction must have a `data`, or `target` and `quantity`.');
     }
-    
-    if(!attributes.owner) {
-      if(jwk && jwk !== 'use_wallet') {
+
+    if (!attributes.owner) {
+      if (jwk && jwk !== 'use_wallet') {
         transaction.owner = jwk.n;
       }
     }
-    if(attributes.last_tx === undefined) {
+    if (attributes.last_tx === undefined) {
       transaction.last_tx = await this.transactions.getTransactionAnchor();
     }
 
-    if (typeof attributes.data === "string") {
+    if (typeof attributes.data === 'string') {
       attributes.data = utils.stringToBuffer(attributes.data);
     }
-    
-    if (attributes.data instanceof ArrayBuffer) {
+
+    if (attributes.data instanceof ArrayBuffer || attributes.data instanceof Buffer) {
       attributes.data = new Uint8Array(attributes.data);
     }
 
     // Replaced instanceof with getting the constructor.name, if not, jest on jsdom will fail.
     if (attributes.data && attributes.data.constructor.name !== 'Uint8Array') {
       throw new Error(
-        "Expected data to be a string, Uint8Array or ArrayBuffer"
+        `Expected data to be a string, Uint8Array or ArrayBuffer. ${attributes.data.constructor.name} received.`,
       );
     }
 
     if (attributes.reward === undefined) {
       const length = attributes.data ? attributes.data.byteLength : 0;
-      transaction.reward = await this.transactions.getPrice(
-        length,
-        transaction.target
-        );
+      transaction.reward = await this.transactions.getPrice(length, transaction.target);
     }
 
     // here we should call prepare chunk
-    transaction.data_root = "";
-    transaction.data_size = attributes.data
-      ? attributes.data.byteLength.toString()
-      : "0";
+    transaction.data_root = '';
+    transaction.data_size = attributes.data ? attributes.data.byteLength.toString() : '0';
     transaction.data = attributes.data || new Uint8Array(0);
 
-    const createdTransaction = new Transaction(
-      transaction as TransactionInterface
-    );
+    const createdTransaction = new Transaction(transaction as TransactionInterface);
     await createdTransaction.getSignatureData();
     return createdTransaction;
   }
-  
+
   /**
    * Do an ArQL request.
    * @deprecated Use https://npmjs.org/@textury/ardb instead.
@@ -103,7 +99,7 @@ export default class Arweave {
    * @returns Promise
    */
   public async arql(query: object): Promise<string[]> {
-    const res = await this.api.post("/arql", query);
+    const res = await this.api.post('/arql', query);
     return res.data || [];
   }
 }

@@ -1,4 +1,4 @@
-import { ArCacheInterface } from "../faces/utils/arCache";
+import { ArCacheInterface } from '../faces/utils/arCache';
 
 /**
  * Implementation of a simple in-memory cache.
@@ -28,7 +28,7 @@ export default class ArCache implements ArCacheInterface {
    * @param  {number=2e+6} maxMemSize - Maximum memory size in bytes, default is 2MB.
    * @param  {number=3} itemsToDelete - Number of items to delete when cache is full.
    */
-  constructor(ttl: number = 0,maxMemSize: number = 2e6, itemsToDelete: number = 3) {
+  constructor(ttl: number = 0, maxMemSize: number = 2e6, itemsToDelete: number = 3) {
     this._maxMemSize = maxMemSize;
     this._itemsToDelete = itemsToDelete;
     this._defaultTtl = ttl;
@@ -51,7 +51,7 @@ export default class ArCache implements ArCacheInterface {
     }
 
     this._cache[key] = {
-      ttl: ttl? ttl * 1000 : 0,
+      ttl: ttl ? ttl * 1000 : 0,
       timestamp: Date.now(),
       value,
     };
@@ -60,13 +60,13 @@ export default class ArCache implements ArCacheInterface {
   }
   /**
    * Get a specific item from the cache.
-   * @param  {string} key 
+   * @param  {string} key
    * @returns {any}
    */
   public async get(key: string): Promise<any> {
     const item = this._cache[key];
     if (item) {
-      if(this.hasExpired(key)) {
+      if (this.hasExpired(key)) {
         this.del(key);
         return undefined;
       }
@@ -104,7 +104,7 @@ export default class ArCache implements ArCacheInterface {
   public hasExpired(key: string): boolean {
     const item = this._cache[key];
     if (item) {
-      return item.ttl && (item.ttl + item.timestamp) < Date.now();
+      return item.ttl && item.ttl + item.timestamp < Date.now();
     }
     return true;
   }
@@ -117,7 +117,7 @@ export default class ArCache implements ArCacheInterface {
     // Delete expired ttls
     for (const key in this._cache) {
       if (this._cache.hasOwnProperty(key)) {
-        if(this.hasExpired(key)) {
+        if (this.hasExpired(key)) {
           this.del(key);
         }
       }

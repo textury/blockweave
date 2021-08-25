@@ -1,16 +1,16 @@
-import { TransactionInterface } from "../faces/lib/transaction";
-import { TransactionStatusResponseInterface } from "../faces/lib/transactions";
-import { JWKInterface } from "../faces/lib/wallet";
-import CryptoInterface, { SignatureOptions } from "../faces/utils/crypto";
-import { bufferTob64Url, bufferToString } from "../utils/buffer";
-import Api from "./api";
-import Chunks from "./chunks";
-import Transaction from "./transaction";
-import "arconnect";
-import { SerializedUploader } from "../faces/utils/transactionUploader";
-import { TransactionUploader } from "../utils/transactionUploader";
-import { ArCacheInterface } from "../faces/utils/arCache";
-import ArCache from "../utils/arCache";
+import { TransactionInterface } from '../faces/lib/transaction';
+import { TransactionStatusResponseInterface } from '../faces/lib/transactions';
+import { JWKInterface } from '../faces/lib/wallet';
+import CryptoInterface, { SignatureOptions } from '../faces/utils/crypto';
+import { bufferTob64Url, bufferToString } from '../utils/buffer';
+import Api from './api';
+import Chunks from './chunks';
+import Transaction from './transaction';
+import 'arconnect';
+import { SerializedUploader } from '../faces/utils/transactionUploader';
+import { TransactionUploader } from '../utils/transactionUploader';
+import { ArCacheInterface } from '../faces/utils/arCache';
+import ArCache from '../utils/arCache';
 
 export default class Transactions {
   private api: Api;
@@ -30,13 +30,13 @@ export default class Transactions {
    * @return {Promise<string>} An anchor block ID.
    */
   public async getTransactionAnchor(): Promise<string> {
-    let data: string = this.cache && await this.cache.get('tx_anchor');
-    if(!data) {
+    let data: string = this.cache && (await this.cache.get('tx_anchor'));
+    if (!data) {
       const res = await this.api.get('tx_anchor');
       data = res.data;
 
       // A single anchor can work for up to 25 blocks, here we are limiting it to ~20 blocks.
-      if(this.cache) {
+      if (this.cache) {
         this.cache.set('tx_anchor', data, 40 * 60 * 1000);
       }
     }
@@ -51,17 +51,17 @@ export default class Transactions {
    * @return {Promise<string>} The network fee in Winston.
    */
   public async getPrice(byteSize: number, targetAddress: string): Promise<string> {
-    let data: string = this.cache && await this.cache.get(`getPrice-${byteSize}-${targetAddress}`);
+    let data: string = this.cache && (await this.cache.get(`getPrice-${byteSize}-${targetAddress}`));
 
-    if(!data) {
-      const endpoint = targetAddress? `price/${byteSize}/${targetAddress}` : `price/${byteSize}`;
-      
+    if (!data) {
+      const endpoint = targetAddress ? `price/${byteSize}/${targetAddress}` : `price/${byteSize}`;
+
       const res = await this.api.get(endpoint, {
-        transformResponse: (d): string => d
+        transformResponse: (d): string => d,
       });
       data = res.data;
 
-      if(this.cache) {
+      if (this.cache) {
         this.cache.set(`getPrice-${byteSize}-${targetAddress}`, data, 60 * 60 * 1000);
       }
     }
@@ -78,14 +78,14 @@ export default class Transactions {
   public async get(id: string): Promise<Transaction> {
     const res = await this.api.get(`tx/${id}`);
 
-    switch(res.status) {
+    switch (res.status) {
       case 200: {
         const dataSize = parseInt(res.data.data_size, 10);
-        if(res.data.format >= 2 && dataSize > 0 && dataSize <= 1024 * 1024 * 12) {
+        if (res.data.format >= 2 && dataSize > 0 && dataSize <= 1024 * 1024 * 12) {
           const data = await this.getData(id);
-          return new Transaction({...res.data, data});
+          return new Transaction({ ...res.data, data });
         }
-  
+
         return new Transaction({
           ...res.data,
           fromat: res.data.format || 1,
@@ -133,16 +133,16 @@ export default class Transactions {
    */
   public async getStatus(id: string): Promise<TransactionStatusResponseInterface> {
     const res = await this.api.get(`tx/${id}/status`);
-    if(res.status === 200) {
+    if (res.status === 200) {
       return {
         status: 200,
-        confirmed: res.data
+        confirmed: res.data,
       };
     }
 
     return {
       status: res.status,
-      confirmed: null
+      confirmed: null,
     };
   }
 
@@ -156,16 +156,16 @@ export default class Transactions {
   public async getData(id: string, options?: { decode?: boolean; string?: boolean }): Promise<string | Uint8Array> {
     const res = await this.api.get(id, { responseType: 'arraybuffer' });
     let data: Uint8Array;
-    if(res.status === 200) {
+    if (res.status === 200) {
       data = new Uint8Array(res.data);
     }
 
-    if(res.status === 400 && (res.data === 'tx_data_too_big' || res.statusText === 'tx_data_too_big')) {
+    if (res.status === 400 && (res.data === 'tx_data_too_big' || res.statusText === 'tx_data_too_big')) {
       data = await this.chunks.downloadchunkedData(id);
     }
 
-    if(!data) {
-      switch(res.status) {
+    if (!data) {
+      switch (res.status) {
         case 202:
           throw new Error('TX_PENDING');
         case 404:
@@ -177,9 +177,9 @@ export default class Transactions {
       }
     }
 
-    if(options && options.decode && !options.string) {
+    if (options && options.decode && !options.string) {
       return data;
-    } else if(options && options.decode && options.string) {
+    } else if (options && options.decode && options.string) {
       return bufferToString(data);
     }
 
@@ -193,13 +193,17 @@ export default class Transactions {
    * @param {SignatureOptions} options Signature options, optional.
    * @return {Promise<void>}
    */
-  public async sign(transaction: Transaction, jwk?: JWKInterface | 'use_wallet', options?: SignatureOptions): Promise<void> {
-    if(!jwk && (typeof window === 'undefined' || !window.arweaveWallet)) {
+  public async sign(
+    transaction: Transaction,
+    jwk?: JWKInterface | 'use_wallet',
+    options?: SignatureOptions,
+  ): Promise<void> {
+    if (!jwk && (typeof window === 'undefined' || !window.arweaveWallet)) {
       throw new Error('An arweave JWK must be provided.');
-    } else if(!jwk || jwk === 'use_wallet') {
+    } else if (!jwk || jwk === 'use_wallet') {
       try {
         const existingPermissions = await window.arweaveWallet.getPermissions();
-        if(!existingPermissions.includes('SIGN_TRANSACTION')) {
+        if (!existingPermissions.includes('SIGN_TRANSACTION')) {
           await window.arweaveWallet.connect(['SIGN_TRANSACTION']);
         }
       } catch {
@@ -244,49 +248,44 @@ export default class Transactions {
      * The transaction ID should be a SHA-256 hash of the raw signature bytes, so this needs
      * to be recalculated from the signature and checked against the transaction ID.
      */
-     const rawSignature = transaction.get("signature", {
+    const rawSignature = transaction.get('signature', {
       decode: true,
       string: false,
     });
 
-    const expectedId = bufferTob64Url(
-      await this.crypto.hash(rawSignature)
-    );
+    const expectedId = bufferTob64Url(await this.crypto.hash(rawSignature));
 
     if (transaction.id !== expectedId) {
       throw new Error(
-        `Invalid transaction signature or ID! The transaction ID doesn't match the expected SHA-256 hash of the signature.`
+        `Invalid transaction signature or ID! The transaction ID doesn't match the expected SHA-256 hash of the signature.`,
       );
     }
 
     /**
      * Now verify the signature is valid and signed by the owner wallet (owner field = originating wallet public key).
      */
-    return this.crypto.verify(
-      transaction.owner,
-      signaturePayload,
-      rawSignature
-    );
+    return this.crypto.verify(transaction.owner, signaturePayload, rawSignature);
   }
 
-  
   /**
    * Post a previously signed transaction to the network.
    * @param  {Transaction|Buffer|string|object} transaction - The transaction to post.
    * @returns {Promise} Returns a promise which resolves to `{status: number; statusText: string; data: any}`.
    */
-  public async post(transaction: Transaction | Buffer | string | object): Promise<{status: number; statusText: string; data: any}> {
-    if(typeof transaction === 'string') {
-      transaction = new Transaction(JSON.parse(transaction));  
-    } else if(typeof (transaction as any).readInt32BE === 'function') {
+  public async post(
+    transaction: Transaction | Buffer | string | object,
+  ): Promise<{ status: number; statusText: string; data: any }> {
+    if (typeof transaction === 'string') {
+      transaction = new Transaction(JSON.parse(transaction));
+    } else if (typeof (transaction as any).readInt32BE === 'function') {
       transaction = new Transaction(JSON.parse(transaction.toString()));
-    } else if(typeof transaction === 'object' && !(transaction instanceof Transaction)) {
+    } else if (typeof transaction === 'object' && !(transaction instanceof Transaction)) {
       transaction = new Transaction(transaction as object);
     }
 
-    if(!(transaction instanceof Transaction)) {
+    if (!(transaction instanceof Transaction)) {
       throw new Error('Transaction must be an instance of Transaction');
-    } else if(!transaction.chunks) {
+    } else if (!transaction.chunks) {
       await transaction.prepareChunks(transaction.data);
     }
 
@@ -312,7 +311,7 @@ export default class Transactions {
 
     return {
       status: 200,
-      statusText: "OK",
+      statusText: 'OK',
       data: {},
     };
   }
@@ -334,10 +333,7 @@ export default class Transactions {
    * @param upload a Transaction object, a previously save progress object, or a transaction id.
    * @param data the data of the transaction. Required when resuming an upload.
    */
-   public async getUploader(
-    upload: Transaction | SerializedUploader | string,
-    data?: Uint8Array | ArrayBuffer
-  ) {
+  public async getUploader(upload: Transaction | SerializedUploader | string, data?: Uint8Array | ArrayBuffer) {
     let uploader!: TransactionUploader;
 
     if (upload instanceof Transaction) {
@@ -351,16 +347,12 @@ export default class Transactions {
         throw new Error(`Must provide data when resuming upload`);
       }
 
-      if (typeof upload === "string") {
+      if (typeof upload === 'string') {
         upload = await TransactionUploader.fromTransactionId(this.api, upload);
       }
 
       // upload should be a serialized upload.
-      uploader = await TransactionUploader.fromSerialized(
-        this.api,
-        upload,
-        data as Uint8Array
-      );
+      uploader = await TransactionUploader.fromSerialized(this.api, upload, data as Uint8Array);
     }
 
     return uploader;
@@ -380,10 +372,7 @@ export default class Transactions {
    * @param {Transaction|SerializedUploader|string} upload a Transaction object, a previously save uploader, or a transaction id.
    * @param {Uint8Array} data the data of the transaction. Required when resuming an upload.
    */
-  public async *upload(
-    upload: Transaction | SerializedUploader | string,
-    data?: Uint8Array
-  ) {
+  public async *upload(upload: Transaction | SerializedUploader | string, data?: Uint8Array) {
     const uploader = await this.getUploader(upload, data);
 
     while (!uploader.isComplete) {

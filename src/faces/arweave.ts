@@ -1,4 +1,4 @@
-import { Tag } from "../lib/tag";
+import { Tag } from '../lib/tag';
 
 export interface CreateTransactionInterface {
   format: number;
