@@ -41,7 +41,7 @@ export default class Wallets {
    * @param  {string} address - Wallet address
    * @returns {Promise<string>} - Promise which resolves on a transaction id as string.
    */
-  public async getLastTxId(address: string): Promise<string> {
+  public async getLastTransactionId(address: string): Promise<string> {
     let data: string = this.cache && (await this.cache.get(`lastTxId-${address}`));
     if (!data) {
       const res = await this.api.get(`wallet/${address}/last_tx`);

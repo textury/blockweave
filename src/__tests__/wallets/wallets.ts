@@ -53,7 +53,7 @@ describe('Wallets and keys', () => {
     const wallet = await arweave.wallets.generate();
     const address = await arweave.wallets.jwkToAddress(wallet);
     const balance = await arweave.wallets.getBalance(address);
-    const lastTx = await arweave.wallets.getLastTxId(address);
+    const lastTx = await arweave.wallets.getLastTransactionId(address);
 
     expect(typeof balance).toBe('string');
     expect(balance).toBe('0');
@@ -61,7 +61,7 @@ describe('Wallets and keys', () => {
     expect(lastTx).toBe('');
 
     const balanceB = await arweave.wallets.getBalance(liveAddress);
-    const lastTxB = await arweave.wallets.getLastTxId(liveAddress);
+    const lastTxB = await arweave.wallets.getLastTransactionId(liveAddress);
 
     expect(typeof balanceB).toBe('string');
     expect(balanceB).toBe(liveAddressBalance);
