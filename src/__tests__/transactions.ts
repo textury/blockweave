@@ -172,9 +172,7 @@ describe('Transactions', () => {
     tx.signature = 'xxx';
 
     try {
-      const r = await arweave.transactions.verify(tx);
-      console.log('signature error');
-      console.log(r);
+      await arweave.transactions.verify(tx);
     } catch (e) {
       expect(e.message).toBe(
         "Invalid transaction signature or ID! The transaction ID doesn't match the expected SHA-256 hash of the signature.",
