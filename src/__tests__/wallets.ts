@@ -1,4 +1,4 @@
-import Arweave from '../../arweave';
+import Arweave from '../arweave';
 
 const digestRegex = /^[a-z0-9-_]{43}$/i;
 const liveAddressBalance = '498557055636';
@@ -70,7 +70,7 @@ describe('Wallets and keys', () => {
   });
 
   test('Resolve JWK to Address', async () => {
-    const jwk = require('../fixtures/arweave-keyfile.json');
+    const jwk = require('./fixtures/arweave-keyfile.json');
     const address = await arweave.wallets.jwkToAddress(jwk);
 
     expect(typeof address).toBe('string');
@@ -78,7 +78,7 @@ describe('Wallets and keys', () => {
   });
 
   test('Public key to address', async () => {
-    const jwk = require('../fixtures/arweave-keyfile.json');
+    const jwk = require('./fixtures/arweave-keyfile.json');
     const address = await arweave.wallets.ownerToAddress(jwk.n);
 
     expect(typeof address).toBe('string');

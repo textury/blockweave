@@ -7,7 +7,7 @@ describe('API POST', () => {
   let arweave: Arweave;
 
   beforeAll(() => {
-    arweave = new Arweave({ url: 'https://arweave.net', log: true });
+    arweave = new Arweave({ url: 'https://arweave.net', logging: true });
   });
 
   beforeEach(() => {
@@ -46,7 +46,7 @@ describe('API POST', () => {
   });
 
   test('graphql on invalid gateway, should be replaced to an active one', async () => {
-    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', log: true });
+    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', logging: true });
     const txs = (
       await inst.api.post('graphql', {
         query: `
@@ -72,7 +72,7 @@ describe('API POST', () => {
   });
 
   test("graphql on invalid gateway with invalid trusted hosts, shouldn't be replaced", async () => {
-    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', log: true }, ['https://hasdhfhasdf.com']);
+    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', logging: true }, ['https://hasdhfhasdf.com']);
     jest.spyOn(axios, 'post').mockRejectedValue(new Error('error'));
 
     await expect(
@@ -97,7 +97,7 @@ describe('API POST', () => {
   });
 
   test("graphql on invalid localhost, shouldn't be replaced", async () => {
-    const inst = new Arweave({ url: 'https://localhost:9876', log: true });
+    const inst = new Arweave({ url: 'https://localhost:9876', logging: true });
     jest.spyOn(axios, 'post').mockRejectedValue(new Error('error'));
 
     await expect(

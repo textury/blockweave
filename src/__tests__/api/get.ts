@@ -54,7 +54,7 @@ describe('API GET', () => {
   });
 
   test('info on invalid gateway, should be replaced to an active one', async () => {
-    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', log: true });
+    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', logging: true });
     const res = await inst.api.get('info');
 
     expect(inst.api.config.host).not.toBe('hasdfhahsdflkajsdf.com');
@@ -73,7 +73,7 @@ describe('API GET', () => {
   });
 
   test("info on invalid gateway with invalid trusted hosts, shouldn't be replaced", async () => {
-    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', log: true }, ['https://hasdhfhasdf.com']);
+    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', logging: true }, ['https://hasdhfhasdf.com']);
     jest.spyOn(axios, 'get').mockRejectedValue(new Error('error'));
 
     await expect(inst.api.get('info')).rejects.toThrow();
@@ -81,7 +81,7 @@ describe('API GET', () => {
   });
 
   test("info on invalid localhost, shouldn't be replaced", async () => {
-    const inst = new Arweave({ url: 'https://localhost:9876', log: true });
+    const inst = new Arweave({ url: 'https://localhost:9876', logging: true });
     jest.spyOn(axios, 'get').mockRejectedValue(new Error('error'));
 
     await expect(inst.api.get('info')).rejects.toThrow();

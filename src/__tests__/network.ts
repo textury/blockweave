@@ -1,5 +1,5 @@
-import Arweave from '../../arweave';
-import { NetworkInfoInterface, PeerList } from '../../faces/lib/network';
+import Arweave from '../arweave';
+import { NetworkInfoInterface, PeerList } from '../faces/lib/network';
 
 describe('NETWORK', () => {
   let arweave: Arweave;
