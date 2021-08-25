@@ -6,6 +6,6 @@ export default interface ApiConfigInterface {
   protocol?: string;
   port?: string | number;
   timeout?: number;
-  log?: boolean;
+  logging?: boolean;
   logger?: LoggerInterface;
 }

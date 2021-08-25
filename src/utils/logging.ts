@@ -6,7 +6,7 @@ export default class Logging {
   _log: boolean = false;
 
   constructor(config: ApiConfigInterface) {
-    this._log = config.log;
+    this._log = config.logging;
     this.logger = config.logger || console;
   }
 

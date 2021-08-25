@@ -16,7 +16,7 @@ describe('Transactions', () => {
   let arweave: Arweave;
 
   beforeAll(() => {
-    arweave = new Arweave({ url: 'https://arweave.net', log: true });
+    arweave = new Arweave({ url: 'https://arweave.net', logging: true });
   });
 
   beforeEach(() => {

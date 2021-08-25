@@ -52,7 +52,7 @@ export default class Api {
       maxContentLength: 1024 * 1024 * 512,
     });
 
-    if (this.config.log) {
+    if (this.config.logging) {
       instance.interceptors.request.use((request) => {
         this.config.logger!.log(`Requesting: ${request.baseURL}/${request.url}`);
         return request;
@@ -145,7 +145,7 @@ export default class Api {
     }
 
     config.timeout = config.timeout || 20000;
-    config.log = config.log || false;
+    config.logging = config.logging || false;
     config.logger = config.logger || console;
 
     return config;

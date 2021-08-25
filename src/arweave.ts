@@ -30,7 +30,7 @@ export default class Arweave {
   constructor(apiConfig: ApiConfigInterface = {}, trustedHosts?: string[]) {
     const cache = new ArCache();
 
-    if (apiConfig.log && !apiConfig.logger) {
+    if (apiConfig.logging && !apiConfig.logger) {
       apiConfig.logger = new Logging(apiConfig);
     }
 
