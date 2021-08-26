@@ -2,8 +2,6 @@
 JavaScript/TypeScript SDK for interacting with the Arweave network
 
 **API differences with ArweaveJS from the core team:**
-
-**Arweave.init() / API**
 - `Arweave.init()` has been replaced to `new Arweave()`.
 - `init()` can be initialized without params.
 - `init()` has a new option called `url` which allows us to do `Arweave.init({url: 'https://arweave.net'})` instead of using `protocol`, `host`, `port` separately.
