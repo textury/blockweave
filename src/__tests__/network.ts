@@ -1,11 +1,11 @@
-import Arsdk from '../arsdk';
+import Solid from '../solid';
 import { NetworkInfoInterface, PeerList } from '../faces/lib/network';
 
 describe('NETWORK', () => {
-  let arsdk: Arsdk;
+  let solid: Solid;
 
   beforeAll(() => {
-    arsdk = new Arsdk({ url: 'https://arweave.net' });
+    solid = new Solid({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('NETWORK', () => {
   });
 
   test('getInfo', async () => {
-    const info: NetworkInfoInterface = await arsdk.network.getInfo();
+    const info: NetworkInfoInterface = await solid.network.getInfo();
 
     expect(info).toBeInstanceOf(Object);
     expect(typeof info.network).toBe('string');
@@ -35,7 +35,7 @@ describe('NETWORK', () => {
   });
 
   test('getPeers', async () => {
-    const peers: PeerList = await arsdk.network.getPeers();
+    const peers: PeerList = await solid.network.getPeers();
 
     expect(peers.length).toBeGreaterThan(0);
     expect(typeof peers[0]).toBe('string');

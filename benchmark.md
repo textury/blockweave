@@ -2,7 +2,7 @@ We did a performance comparison using [kelonio](https://www.npmjs.com/package/ke
 
 The final results are a difference of **67% (974 ms)**:
 ```
-arsdk: 961 ms
+solid: 961 ms
 arweave: 1935ms
 ```
 
@@ -10,20 +10,20 @@ If you want to run it yourself. Here's the code we used:
 ```typescript
 import { measure } from "kelonio";
 import Arweave from 'arweave';
-import Arsdk from 'arsdk';
+import Solid from '@textury/solid';
 
 (async () => {
-    const arsdk = new Arsdk({ url: 'https://arweave.net' });
+    const solid = new Solid({ url: 'https://arweave.net' });
 
     measure(async () => {
-        const wallet = await arsdk.wallets.generate();
+        const wallet = await solid.wallets.generate();
 
-        const tx = await arsdk.createTransaction({
+        const tx = await solid.createTransaction({
             data: 'Hello, World!'
         }, wallet);
         await tx.sign();
         await tx.post();
-    }).then(m => console.log(`Arsdk version: ${m.mean} ms`));
+    }).then(m => console.log(`Solid version: ${m.mean} ms`));
 
 
     const ar = Arweave.init({

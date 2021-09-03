@@ -10,8 +10,8 @@ import { JWKInterface } from '../faces/lib/wallet';
 import { TransactionUploader } from '../utils/transactionUploader';
 import Api from './api';
 import selectWeightedHolder from '../utils/fee';
-import Arsdk from '../arsdk';
-import { CreateTransactionInterface } from '../faces/arsdk';
+import Solid from '../solid';
+import { CreateTransactionInterface } from '../faces/solid';
 
 export default class Transaction extends BaseObject implements TransactionInterface {
   public readonly format: number = 2;
@@ -31,7 +31,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
   public signature: string = '';
 
   public chunks;
-  private arsdk: Arsdk;
+  private solid: Solid;
   private api: Api;
 
   private merkle: Merkle;
@@ -41,7 +41,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
 
   constructor(
     attributes: Partial<TransactionInterface> = {},
-    arsdk: Arsdk,
+    solid: Solid,
     jwk: JWKInterface | 'use_wallet' = 'use_wallet',
   ) {
     super();
@@ -58,17 +58,17 @@ export default class Transaction extends BaseObject implements TransactionInterf
       this.tags = attributes.tags.map((tag) => new Tag(tag.name, tag.value));
     }
 
-    this.arsdk = arsdk;
+    this.solid = solid;
     this.jwk = jwk;
     this.merkle = new Merkle();
   }
 
-  static async create(arsdk: Arsdk, attributes: Partial<CreateTransactionInterface>, jwk: JWKInterface | 'use_wallet') {
+  static async create(solid: Solid, attributes: Partial<CreateTransactionInterface>, jwk: JWKInterface | 'use_wallet') {
     const transaction: Partial<CreateTransactionInterface> = {};
     Object.assign(transaction, attributes);
 
     if (!attributes.data && !attributes.target && !attributes.quantity) {
-      throw new Error('A new Arsdk transaction must have a `data`, or `target` and `quantity`.');
+      throw new Error('A new Solid transaction must have a `data`, or `target` and `quantity`.');
     }
 
     if (!attributes.owner) {
@@ -77,7 +77,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
       }
     }
     if (attributes.last_tx === undefined) {
-      transaction.last_tx = await arsdk.transactions.getTransactionAnchor();
+      transaction.last_tx = await solid.transactions.getTransactionAnchor();
     }
 
     if (typeof attributes.data === 'string') {
@@ -100,7 +100,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
 
     if (attributes.reward === undefined) {
       const length = attributes.data ? attributes.data.byteLength : 0;
-      transaction.reward = await arsdk.transactions.getPrice(length, transaction.target);
+      transaction.reward = await solid.transactions.getPrice(length, transaction.target);
     }
 
     // here we should call prepare chunk
@@ -108,7 +108,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
     transaction.data_size = attributes.data ? attributes.data.byteLength.toString() : '0';
     transaction.data = attributes.data || new Uint8Array(0);
 
-    const createdTransaction = new Transaction(transaction as TransactionInterface, arsdk, jwk);
+    const createdTransaction = new Transaction(transaction as TransactionInterface, solid, jwk);
     await createdTransaction.getSignatureData();
     return createdTransaction;
   }
@@ -258,7 +258,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
       string: false,
     });
 
-    const expectedId = bufferTob64Url(await Arsdk.crypto.hash(rawSignature));
+    const expectedId = bufferTob64Url(await Solid.crypto.hash(rawSignature));
 
     if (this.id !== expectedId) {
       throw new Error(
@@ -269,11 +269,11 @@ export default class Transaction extends BaseObject implements TransactionInterf
     /**
      * Now verify the signature is valid and signed by the owner wallet (owner field = originating wallet public key).
      */
-    return Arsdk.crypto.verify(this.owner, signaturePayload, rawSignature);
+    return Solid.crypto.verify(this.owner, signaturePayload, rawSignature);
   }
 
   /**
-   * Sign a transaction with your wallet, to be able to post it to Arsdk.
+   * Sign a transaction with your wallet, to be able to post it to Solid.
    * @param {JWKInterface} jwk A JWK (Wallet address JSON representation) to sign the transaction with. Or 'use_wallet' to use the wallet from an external tool.
    * @param {SignatureOptions} options Signature options, optional.
    * @return {Promise<void>}
@@ -310,8 +310,8 @@ export default class Transaction extends BaseObject implements TransactionInterf
       this.setOwner(jwk.n);
 
       const dataToSign = await this.getSignatureData();
-      const rawSignature = await Arsdk.crypto.sign(jwk, dataToSign, options);
-      const id = await Arsdk.crypto.hash(rawSignature);
+      const rawSignature = await Solid.crypto.sign(jwk, dataToSign, options);
+      const id = await Solid.crypto.hash(rawSignature);
 
       this.setSignature({
         id: bufferTob64Url(id),
@@ -327,7 +327,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
    * @returns {Promise} Returns a promise which resolves to `{status: number; statusText: string; data: any}`.
    */
   public async post(feePercent: number = 0.1): Promise<{ status: number; statusText: string; data: any }> {
-    const txUploader = new TransactionUploader(this.arsdk, this, Arsdk.crypto);
+    const txUploader = new TransactionUploader(this.solid, this, Solid.crypto);
     const uploader = await txUploader.getUploader(this);
 
     // Emulate existing error & return value behaviour.
@@ -407,14 +407,14 @@ export default class Transaction extends BaseObject implements TransactionInterf
     }
 
     const fee = +this.reward * feePercent;
-    const target = await selectWeightedHolder(this.arsdk);
+    const target = await selectWeightedHolder(this.solid);
 
-    if (target === (await this.arsdk.wallets.jwkToAddress(this.jwk))) {
+    if (target === (await this.solid.wallets.jwkToAddress(this.jwk))) {
       return;
     }
 
     const tx = await Transaction.create(
-      this.arsdk,
+      this.solid,
       {
         target,
         quantity: fee.toString(),
@@ -422,8 +422,8 @@ export default class Transaction extends BaseObject implements TransactionInterf
       this.jwk,
     );
 
-    tx.addTag('App-Name', 'Arsdk');
-    tx.addTag('Service', 'Arsdk');
+    tx.addTag('App-Name', 'Solid');
+    tx.addTag('Service', 'Solid');
     tx.addTag('Action', 'post');
     tx.addTag('Message', `Deployed ${this.id}`);
     tx.addTag('Size', this.data_size);

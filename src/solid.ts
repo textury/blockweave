@@ -9,14 +9,14 @@ import Chunks from './lib/chunks';
 import Transactions from './lib/transactions';
 import ArCache from './utils/arCache';
 import { JWKInterface } from './faces/lib/wallet';
-import { CreateTransactionInterface } from './faces/arsdk';
+import { CreateTransactionInterface } from './faces/solid';
 import Transaction from './lib/transaction';
 import * as SmartWeaveSdk from 'redstone-smartweave';
-import * as arsdkUtils from './utils/buffer';
+import * as solidUtils from './utils/buffer';
 import Logging from './utils/logging';
 import Blocks from './lib/blocks';
 
-export default class Arsdk {
+export default class Solid {
   public api: Api;
   public wallets: Wallets;
   public transactions: Transactions;
@@ -25,9 +25,9 @@ export default class Arsdk {
   public ar: Ar;
   public chunks: Chunks;
   public cache: ArCache;
-  public utils = arsdkUtils;
+  public utils = solidUtils;
   /**
-   * @deprecated Use the static Arsdk.crypto instead.
+   * @deprecated Use the static Solid.crypto instead.
    */
   public crypto: CryptoInterface = new CryptoDriver();
 
@@ -43,7 +43,7 @@ export default class Arsdk {
 
     this.api = new Api(apiConfig, trustedHosts);
     this.network = new Network(this.api, this.cache);
-    this.wallets = new Wallets(this.api, Arsdk.crypto, this.cache);
+    this.wallets = new Wallets(this.api, Solid.crypto, this.cache);
     this.ar = new Ar();
     this.chunks = new Chunks(this.api);
     this.transactions = new Transactions(this, this.chunks, this.cache);
@@ -71,6 +71,6 @@ export default class Arsdk {
 
 declare global {
   interface Window {
-    Arsdk: typeof Arsdk;
+    Solid: typeof Solid;
   }
 }

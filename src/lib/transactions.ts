@@ -9,18 +9,18 @@ import 'arconnect';
 import { SerializedUploader } from '../faces/utils/transactionUploader';
 import { TransactionUploader } from '../utils/transactionUploader';
 import { ArCacheInterface } from '../faces/utils/arCache';
-import Arsdk from '../arsdk';
+import Solid from '../solid';
 import ArCache from '../utils/arCache';
 
 export default class Transactions {
-  private arsdk: Arsdk;
+  private solid: Solid;
   private chunks: Chunks;
   private cache: ArCacheInterface;
 
-  constructor(arsdk: Arsdk, chunks: Chunks, cache: ArCache) {
+  constructor(solid: Solid, chunks: Chunks, cache: ArCache) {
     this.chunks = chunks;
     this.cache = cache;
-    this.arsdk = arsdk;
+    this.solid = solid;
   }
 
   /**
@@ -30,7 +30,7 @@ export default class Transactions {
   public async getTransactionAnchor(): Promise<string> {
     let data: string = this.cache && (await this.cache.get('tx_anchor'));
     if (!data) {
-      const res = await this.arsdk.api.get('tx_anchor');
+      const res = await this.solid.api.get('tx_anchor');
       data = res.data;
 
       // A single anchor can work for up to 25 blocks, here we are limiting it to ~20 blocks.
@@ -54,7 +54,7 @@ export default class Transactions {
     if (!data) {
       const endpoint = targetAddress ? `price/${byteSize}/${targetAddress}` : `price/${byteSize}`;
 
-      const res = await this.arsdk.api.get(endpoint, {
+      const res = await this.solid.api.get(endpoint, {
         transformResponse: (d): string => d,
       });
       data = res.data;
@@ -74,14 +74,14 @@ export default class Transactions {
    * @return {Promise<Transaction>} A promise which resolves into the Transaction object.
    */
   public async get(id: string): Promise<Transaction> {
-    const res = await this.arsdk.api.get(`tx/${id}`);
+    const res = await this.solid.api.get(`tx/${id}`);
 
     switch (res.status) {
       case 200: {
         const dataSize = parseInt(res.data.data_size, 10);
         if (res.data.format >= 2 && dataSize > 0 && dataSize <= 1024 * 1024 * 12) {
           const data = await this.getData(id);
-          return new Transaction({ ...res.data, data }, this.arsdk);
+          return new Transaction({ ...res.data, data }, this.solid);
         }
 
         return new Transaction(
@@ -89,7 +89,7 @@ export default class Transactions {
             ...res.data,
             fromat: res.data.format || 1,
           },
-          this.arsdk,
+          this.solid,
         );
       }
       case 202:
@@ -109,7 +109,7 @@ export default class Transactions {
    * @return {Promise<Transaction>} A promise which resolves into the Transaction object.
    */
   public fromRaw(attributes: Partial<TransactionInterface> = {}): Transaction {
-    return new Transaction(attributes, this.arsdk);
+    return new Transaction(attributes, this.solid);
   }
 
   /**
@@ -119,7 +119,7 @@ export default class Transactions {
    */
   public async search(tagName: string, tagValue: string): Promise<string[]> {
     try {
-      const res = await this.arsdk.api.post('graphql', {
+      const res = await this.solid.api.post('graphql', {
         query: `query {
           transactions(first: 10, tags: [
             {name: "${tagName}", values: ["${tagValue}"] }
@@ -134,7 +134,7 @@ export default class Transactions {
       });
 
       return res.data.data.transactions.edges.map((e) => e.node.id);
-    } catch {}
+    } catch { }
 
     return [];
   }
@@ -145,7 +145,7 @@ export default class Transactions {
    * @return {Promise<TransactionStatusResponse>} A promise which resolves into the TransactionStatusResponse object.
    */
   public async getStatus(id: string): Promise<TransactionStatusResponseInterface> {
-    const res = await this.arsdk.api.get(`tx/${id}/status`);
+    const res = await this.solid.api.get(`tx/${id}/status`);
     if (res.status === 200) {
       return {
         status: 200,
@@ -167,7 +167,7 @@ export default class Transactions {
    * @return {Promise<Uint8Array>} The transaction data as an Uint8Array.
    */
   public async getData(id: string, options?: { decode?: boolean; string?: boolean }): Promise<string | Uint8Array> {
-    const res = await this.arsdk.api.get(id, { responseType: 'arraybuffer' });
+    const res = await this.solid.api.get(id, { responseType: 'arraybuffer' });
     let data: Uint8Array;
     if (res.status === 200) {
       data = new Uint8Array(res.data);
@@ -200,7 +200,7 @@ export default class Transactions {
   }
 
   /**
-   * Sign a transaction with your wallet, to be able to post it to Arsdk.
+   * Sign a transaction with your wallet, to be able to post it to Solid.
    * @param {Transaction} transaction The transaction to sign.
    * @param {JWKInterface} jwk A JWK (Wallet address JSON representation) to sign the transaction with. Or 'use_wallet' to use the wallet from an external tool.
    * @param {SignatureOptions} options Signature options, optional.
@@ -223,11 +223,11 @@ export default class Transactions {
     transaction: Transaction | Buffer | string | object,
   ): Promise<{ status: number; statusText: string; data: any }> {
     if (typeof transaction === 'string') {
-      transaction = new Transaction(JSON.parse(transaction), this.arsdk);
+      transaction = new Transaction(JSON.parse(transaction), this.solid);
     } else if (typeof (transaction as any).readInt32BE === 'function') {
-      transaction = new Transaction(JSON.parse(transaction.toString()), this.arsdk);
+      transaction = new Transaction(JSON.parse(transaction.toString()), this.solid);
     } else if (typeof transaction === 'object' && !(transaction instanceof Transaction)) {
-      transaction = new Transaction(transaction as object, this.arsdk);
+      transaction = new Transaction(transaction as object, this.solid);
     }
 
     if (!(transaction instanceof Transaction)) {
@@ -243,7 +243,7 @@ export default class Transactions {
    * @param data the data of the transaction. Required when resuming an upload.
    */
   public async getUploader(upload: Transaction | SerializedUploader | string, data?: Uint8Array | ArrayBuffer) {
-    const txUploader = new TransactionUploader(this.arsdk, upload, Arsdk.crypto);
+    const txUploader = new TransactionUploader(this.solid, upload, Solid.crypto);
     return txUploader.getUploader(upload, data);
   }
 
@@ -253,7 +253,7 @@ export default class Transactions {
    * @param {Uint8Array} data the data of the transaction. Required when resuming an upload.
    */
   public async *upload(upload: Transaction, data?: Uint8Array) {
-    const txUploader = new TransactionUploader(this.arsdk, upload, Arsdk.crypto);
+    const txUploader = new TransactionUploader(this.solid, upload, Solid.crypto);
     return txUploader.upload(upload, data);
   }
 }

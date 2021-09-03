@@ -1,14 +1,14 @@
 import { SmartWeaveNodeFactory, LoggerFactory } from 'redstone-smartweave';
-import Arsdk from '../arsdk';
+import Solid from '../solid';
 
-export default async function selectWeightedHolder(arsdk: Arsdk): Promise<string> {
+export default async function selectWeightedHolder(solid: Solid): Promise<string> {
   const {
     balances,
     vault,
   }: {
     balances: { [key: string]: number };
     vault: { [key: string]: [{ balance: number; start: number; end: number }] };
-  } = await getState(arsdk);
+  } = await getState(solid);
 
   let totalTokens = 0;
   for (const addy of Object.keys(balances)) {
@@ -42,7 +42,7 @@ export default async function selectWeightedHolder(arsdk: Arsdk): Promise<string
   return;
 }
 
-async function getState(arsdk: Arsdk): Promise<{
+async function getState(solid: Solid): Promise<{
   balances: { [key: string]: number };
   vault: { [key: string]: [{ balance: number; start: number; end: number }] };
 }> {
@@ -51,7 +51,7 @@ async function getState(arsdk: Arsdk): Promise<{
   LoggerFactory.INST.logLevel('fatal');
 
   // @ts-ignore
-  const smartweave = SmartWeaveNodeFactory.memCached(arsdk);
+  const smartweave = SmartWeaveNodeFactory.memCached(solid);
 
   // connecting to a given contract
   const cxyzContract = smartweave.contract(cxyzContractTxId);
