@@ -9,14 +9,14 @@ import Chunks from './lib/chunks';
 import Transactions from './lib/transactions';
 import ArCache from './utils/arCache';
 import { JWKInterface } from './faces/lib/wallet';
-import { CreateTransactionInterface } from './faces/arpi';
+import { CreateTransactionInterface } from './faces/ardk';
 import Transaction from './lib/transaction';
 import * as SmartWeaveSdk from 'redstone-smartweave';
-import * as arpiUtils from './utils/buffer';
+import * as ardkUtils from './utils/buffer';
 import Logging from './utils/logging';
 import Blocks from './lib/blocks';
 
-export default class Arpi {
+export default class Ardk {
   public api: Api;
   public wallets: Wallets;
   public transactions: Transactions;
@@ -25,9 +25,9 @@ export default class Arpi {
   public ar: Ar;
   public chunks: Chunks;
   public cache: ArCache;
-  public utils = arpiUtils;
+  public utils = ardkUtils;
   /**
-   * @deprecated Use the static Arpi.crypto instead.
+   * @deprecated Use the static Ardk.crypto instead.
    */
   public crypto: CryptoInterface = new CryptoDriver();
 
@@ -43,7 +43,7 @@ export default class Arpi {
 
     this.api = new Api(apiConfig, trustedHosts);
     this.network = new Network(this.api, this.cache);
-    this.wallets = new Wallets(this.api, Arpi.crypto, this.cache);
+    this.wallets = new Wallets(this.api, Ardk.crypto, this.cache);
     this.ar = new Ar();
     this.chunks = new Chunks(this.api);
     this.transactions = new Transactions(this, this.chunks, this.cache);
@@ -71,6 +71,6 @@ export default class Arpi {
 
 declare global {
   interface Window {
-    Arpi: typeof Arpi;
+    Ardk: typeof Ardk;
   }
 }

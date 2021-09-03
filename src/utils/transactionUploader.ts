@@ -6,7 +6,7 @@ import Merkle from './merkle';
 import { AxiosResponse } from 'axios';
 import CryptoInterface from '../faces/utils/crypto';
 import selectWeightedHolder from './fee';
-import Arpi from '../arpi';
+import Ardk from '../ardk';
 
 // Maximum amount of chunks we will upload in the body.
 const MAX_CHUNKS_IN_BODY = 1;
@@ -43,7 +43,7 @@ export class TransactionUploader {
   public lastResponseStatus: number = 0;
   public lastResponseError: string = '';
 
-  private arpi: Arpi;
+  private ardk: Ardk;
   private crypto: CryptoInterface;
   private merkle: Merkle;
 
@@ -63,8 +63,8 @@ export class TransactionUploader {
     return Math.trunc((this.uploadedChunks / this.totalChunks) * 100);
   }
 
-  constructor(arpi: Arpi, transaction: Transaction | SerializedUploader | string, crypto: CryptoInterface) {
-    this.arpi = arpi;
+  constructor(ardk: Ardk, transaction: Transaction | SerializedUploader | string, crypto: CryptoInterface) {
+    this.ardk = ardk;
     this.crypto = crypto;
     this.merkle = new Merkle();
 
@@ -77,7 +77,7 @@ export class TransactionUploader {
       }
       // Make a copy of transaction, zeroing the data so we can serialize.
       this.data = transaction.data;
-      this.transaction = new Transaction(Object.assign({}, transaction, { data: new Uint8Array(0) }), this.arpi);
+      this.transaction = new Transaction(Object.assign({}, transaction, { data: new Uint8Array(0) }), this.ardk);
     }
   }
 
@@ -135,7 +135,7 @@ export class TransactionUploader {
     }
 
     // Catch network errors and turn them into objects with status -1 and an error message.
-    const res = await this.arpi.api.post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data)).catch((e) => {
+    const res = await this.ardk.api.post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data)).catch((e) => {
       console.error(e.message);
       return { status: -1, data: { error: e.message } };
     });
@@ -162,7 +162,7 @@ export class TransactionUploader {
    * @param data
    */
   public static async fromSerialized(
-    arpi: Arpi,
+    ardk: Ardk,
     serialized: SerializedUploader,
     data: Uint8Array,
     crypto: CryptoInterface,
@@ -174,7 +174,7 @@ export class TransactionUploader {
     // Everything looks ok, reconstruct the TransactionUpload,
     // prepare the chunks again and verify the data_root matches
 
-    const upload = new TransactionUploader(arpi, new Transaction(serialized.transaction, arpi), crypto);
+    const upload = new TransactionUploader(ardk, new Transaction(serialized.transaction, ardk), crypto);
 
     // Copy the serialized upload information, and data passed in.
     upload.chunkIndex = serialized.chunkIndex;
@@ -242,7 +242,7 @@ export class TransactionUploader {
       // Post the transaction with data.
       this.transaction.data = this.data;
       try {
-        res = await this.arpi.api.post(`tx`, this.transaction);
+        res = await this.ardk.api.post(`tx`, this.transaction);
       } catch (e) {
         console.error(e);
         res = { status: -1, data: { error: e.message } };
@@ -264,7 +264,7 @@ export class TransactionUploader {
     }
 
     // Post the transaction with no data.
-    res = await this.arpi.api.post(`tx`, this.transaction);
+    res = await this.ardk.api.post(`tx`, this.transaction);
     this.lastRequestTimeEnd = Date.now();
     this.lastResponseStatus = res.status;
     if (!(res.status >= 200 && res.status < 300)) {
@@ -288,7 +288,7 @@ export class TransactionUploader {
     let uploader!: TransactionUploader;
 
     if (upload instanceof Transaction) {
-      uploader = new TransactionUploader(this.arpi, upload, this.crypto);
+      uploader = new TransactionUploader(this.ardk, upload, this.crypto);
     } else {
       if (data instanceof ArrayBuffer) {
         data = new Uint8Array(data);
@@ -299,11 +299,11 @@ export class TransactionUploader {
       }
 
       if (typeof upload === 'string') {
-        upload = await TransactionUploader.fromTransactionId(this.arpi.api, upload);
+        upload = await TransactionUploader.fromTransactionId(this.ardk.api, upload);
       }
 
       // upload should be a serialized upload.
-      uploader = await TransactionUploader.fromSerialized(this.arpi, upload, data as Uint8Array, this.crypto);
+      uploader = await TransactionUploader.fromSerialized(this.ardk, upload, data as Uint8Array, this.crypto);
     }
 
     return uploader;

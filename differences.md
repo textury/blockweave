@@ -1,15 +1,15 @@
-# Key differences between `arweave` and `arpi`
-They are some differences on how to initialize and how it works for Arpi from Textury (this one), and Arweave.js from the Arweave core team.
+# Key differences between `arweave` and `ardk`
+They are some differences on how to initialize and how it works for Ardk from Textury (this one), and Arweave.js from the Arweave core team.
 
 `arweave` is the Arweave core team library.
-`arpi` is the Textury library (this one).
+`ardk` is the Textury library (this one).
 
 ## Code differences
 
 ### API differences with Arweave.js from the core team:
-- `Arweave.init()` has been replaced to `new Arpi()`.
+- `Arweave.init()` has been replaced to `new Ardk()`.
 - `init()` can be initialized without params.
-- `init()` has a new option called `url` which allows us to do `Arpi({url: 'https://arweave.net'})` instead of using `protocol`, `host`, `port` separately.
+- `init()` has a new option called `url` which allows us to do `Ardk({url: 'https://arweave.net'})` instead of using `protocol`, `host`, `port` separately.
 - `init()` allows to set `host and protocol` or `host and port` without the other params.
 - If the `Arweave` instance isn't able to reach the config gateway, it will move around trusted gateways until it finds a live one, only if it's not `localhost` as `host`.
 - `api.getConfig()` has been replaced to `api.config`.
@@ -22,14 +22,14 @@ They are some differences on how to initialize and how it works for Arpi from Te
 
 ## Caching mechanism comparison
 `arweave` from the Arweave core team doesn't have a cache mechanism.
-`arpi` has a caching by default that works on both node and the browser, while still respecting the time it takes for things to update on the gateway and node. 
+`ardk` has a caching by default that works on both node and the browser, while still respecting the time it takes for things to update on the gateway and node. 
 
 For example, the same `tx_anchor` is required on each transaction and can be used for 25 blocks. We request, cache, and then use it for the next transactions until ~20 blocks (time based), which prevents us from requesting the same `tx_anchor` over and over.
 
 As you can see in this example, we do the same for `/price/{bytes}` calls. Each with their specific time based cache, always respecting how the blockweave works.
 
 ```bash
-# arpi
+# ardk
 Requesting: https://arweave.net/tx_anchor
 Response:   tx_anchor - 200
 Requesting: https://arweave.net/price/13

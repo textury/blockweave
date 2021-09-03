@@ -1,13 +1,13 @@
 import axios from 'axios';
-import Arpi from '../../arpi';
+import Ardk from '../../ardk';
 
 jest.setTimeout(30000);
 
 describe('API POST', () => {
-  let arpi: Arpi;
+  let ardk: Ardk;
 
   beforeAll(() => {
-    arpi = new Arpi({ url: 'https://arweave.net' });
+    ardk = new Ardk({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('API POST', () => {
 
   test('/graphql', async () => {
     const txs = (
-      await arpi.api.post('graphql', {
+      await ardk.api.post('graphql', {
         query: `
       {
         transactions(
@@ -46,7 +46,7 @@ describe('API POST', () => {
   });
 
   test('graphql on invalid gateway, should be replaced to an active one', async () => {
-    const inst = new Arpi({ url: 'https://hasdfhahsdflkajsdf.com' });
+    const inst = new Ardk({ url: 'https://hasdfhahsdflkajsdf.com' });
     const txs = (
       await inst.api.post('graphql', {
         query: `
@@ -72,7 +72,7 @@ describe('API POST', () => {
   });
 
   test("graphql on invalid gateway with invalid trusted hosts, shouldn't be replaced", async () => {
-    const inst = new Arpi({ url: 'https://hasdfhahsdflkajsdf.com' }, ['https://hasdhfhasdf.com']);
+    const inst = new Ardk({ url: 'https://hasdfhahsdflkajsdf.com' }, ['https://hasdhfhasdf.com']);
     jest.spyOn(axios, 'post').mockRejectedValue(new Error('error'));
 
     await expect(
@@ -97,7 +97,7 @@ describe('API POST', () => {
   });
 
   test("graphql on invalid localhost, shouldn't be replaced", async () => {
-    const inst = new Arpi({ url: 'https://localhost:9876' });
+    const inst = new Ardk({ url: 'https://localhost:9876' });
     jest.spyOn(axios, 'post').mockRejectedValue(new Error('error'));
 
     await expect(
