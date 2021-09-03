@@ -1,7 +1,6 @@
 We did a performance comparison using [kelonio](https://www.npmjs.com/package/kelonio), to measure the time it takes to send the same transaction during 100 iterations.
 
-TODO: Update this after adding fees
-The final results are a difference of **74% (1,046 ms)**:
+The final results are a difference of **67% (974 ms)**:
 ```
 ardk: 961 ms
 arweave: 1935ms

@@ -73,5 +73,4 @@ This reduces the time it takes to do repetitive tasks.
 
 We did a benchmark using [kelonio](https://www.npmjs.com/package/kelonio) to measure the time it takes to send the same transaction for a 100 iterations.
 
-TODO: Update this after adding fees
-The final results are a difference of **74% (1,046 ms)**. You can read more about it [here](benchmark.md).
+The final results are a difference of **67% (974 ms)**. You can read more about it [here](benchmark.md).
