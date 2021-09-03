@@ -1,8 +1,8 @@
 {
-  "name": "ardk",
+  "name": "arsdk",
   "version": "1.0.0",
-  "main": "dist/ardk.js",
-  "repository": "https://github.com/textury/ardk.git",
+  "main": "dist/arsdk.js",
+  "repository": "https://github.com/textury/arsdk.git",
   "author": "Cedrik <cedrik.git@tryninja.io>",
   "license": "MIT",
   "files": [

@@ -1,10 +1,10 @@
-# Ardk
+# Arsdk
 
-Ardk is the JavaScript/TypeScript SDK for interacting with the Arweave network and uploading data to the permaweb. It works in latest browsers and Node JS.
+Arsdk is the JavaScript/TypeScript SDK for interacting with the Arweave network and uploading data to the permaweb. It works in latest browsers and Node JS.
 
 Coming from [Arweave JS](https://github.com/ArweaveTeam/arweave-js/)? See some key [differences](differences.md).
 
-- [Ardk](#ardk)
+- [Arsdk](#arsdk)
   - [Installation](#installation)
     - [NPM](#npm)
     - [Bundles](#bundles)
@@ -39,7 +39,7 @@ Coming from [Arweave JS](https://github.com/ArweaveTeam/arweave-js/)? See some k
 ## Installation
 ### NPM
 ```bash
-npm install --save ardk
+npm install --save arsdk
 ```
 
 ### Bundles
@@ -47,13 +47,13 @@ Single bundle file (web only - use the NPM method if using Node).
 
 ```html
 <!-- Latest -->
-<script src="https://unpkg.com/ardk/bundles/web.bundle.js"></script>
+<script src="https://unpkg.com/arsdk/bundles/web.bundle.js"></script>
 
 <!-- Latest, minified-->
-<script src="https://unpkg.com/ardk/bundles/web.bundle.min.js"></script>
+<script src="https://unpkg.com/arsdk/bundles/web.bundle.min.js"></script>
 
 <!-- Specific version -->
-<script src="https://unpkg.com/ardk@1.0.0/bundles/web.bundle.js"></script>
+<script src="https://unpkg.com/arsdk@1.0.0/bundles/web.bundle.js"></script>
 
 <!-- Specific version, minified -->
 <script src="https://unpkg.com/arweave@1.0.0/bundles/web.bundle.min.js"></script>
@@ -64,13 +64,13 @@ Single bundle file (web only - use the NPM method if using Node).
 
 ### Node Module
 ```js
-const Ardk = require('ardk');
+const Arsdk = require('arsdk');
 
 // If you want to connect directly to a gateway
-const ardk = new Ardk({url: 'https://arweave.net'});
+const arsdk = new Arsdk({url: 'https://arweave.net'});
 
 // Or without a gateway, it will select from the default list
-const ardk = new Ardk();
+const arsdk = new Arsdk();
 ```
 
 ### Web Bundles
@@ -80,10 +80,10 @@ const ardk = new Ardk();
 <head>
     <meta charset="UTF-8">
     <title>Hello world</title>
-    <script src="https://unpkg.com/ardk/bundles/web.bundle.js"></script>
+    <script src="https://unpkg.com/arsdk/bundles/web.bundle.js"></script>
     <script>
-    const ardk = new Ardk();
-    ardk.network.getInfo().then(console.log);
+    const arsdk = new Arsdk();
+    arsdk.network.getInfo().then(console.log);
     </script>
 </head>
 <body>
@@ -117,7 +117,7 @@ Make sure they're stored securely as they can never be recovered if lost.
 
 Once AR has been sent to the address for a new wallet, the key can then be used to sign outgoing transactions.
 ```js
-ardk.wallets.generate().then((key) => {
+arsdk.wallets.generate().then((key) => {
     console.log(key);
     // {
     //     "kty": "RSA",
@@ -129,18 +129,18 @@ ardk.wallets.generate().then((key) => {
 #### Get the wallet address for a private key
 
 ```js
-ardk.wallets.jwkToAddress(key).then((address) => {
+arsdk.wallets.jwkToAddress(key).then((address) => {
     console.log(address);
     //1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY
 });
 ```
 
 #### Get an address balance
-Get the balance of a wallet address, all amounts by default are returned in [winston](https://docs.ardk.org/developers/server/http-api#ar-and-winston).
+Get the balance of a wallet address, all amounts by default are returned in [winston](https://docs.arsdk.org/developers/server/http-api#ar-and-winston).
 ```js
-ardk.wallets.getBalance('1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY').then((balance) => {
+arsdk.wallets.getBalance('1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY').then((balance) => {
     let winston = balance;
-    let ar = ardk.ar.winstonToAr(balance);
+    let ar = arsdk.ar.winstonToAr(balance);
 
     console.log(winston);
     //125213858712
@@ -153,7 +153,7 @@ ardk.wallets.getBalance('1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY').then((bal
 #### Get the last transaction ID from a wallet
 
 ```js
-ardk.wallets.getLastTransactionID('1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY').then((transactionId) => {
+arsdk.wallets.getLastTransactionID('1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY').then((transactionId) => {
     console.log(transactionId);
     //3pXpj43Tk8QzDAoERjHE3ED7oEKLKephjnVakvkiHF8
 });
@@ -174,15 +174,15 @@ The transaction ID is a hash of the transaction signature, so a transaction ID c
 Data transactions are used to store data on the Arweave permaweb. They can contain HTML or any arbitrary data and are served like webpages.
 
 ```js
-let key = await ardk.wallets.generate();
+let key = await arsdk.wallets.generate();
 
 // Plain text
-let transactionA = await ardk.createTransaction({
+let transactionA = await arsdk.createTransaction({
     data: '<html><head><meta charset="UTF-8"><title>Hello world!</title></head><body></body></html>'
 }, key);
 
 // Buffer
-let transactionB = await ardk.createTransaction({
+let transactionB = await arsdk.createTransaction({
     data: Buffer.from('Some data', 'utf8')
 }, key);
 
@@ -210,12 +210,12 @@ console.log(transactionA);
 Wallet to wallet transactions can facilitate payments from one wallet to another, given a target wallet and AR token quantity in Winston.
 
 ```js
-let key = await ardk.wallets.generate();
+let key = await arsdk.wallets.generate();
 
 // Send 10.5 AR to 1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY
-let transaction = await ardk.createTransaction({
+let transaction = await arsdk.createTransaction({
     target: '1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY',
-    quantity: ardk.ar.arToWinston('10.5')
+    quantity: arsdk.ar.arToWinston('10.5')
 }, key);
 
 console.log(transaction);
@@ -246,9 +246,9 @@ The `Content-Type` is a reserved tag and is used to set the data content type. F
 if the content type is set to `text/plain` then it will be served as a plain text document and not render in browsers.
 
 ```js
-let key = await ardk.wallets.generate();
+let key = await arsdk.wallets.generate();
 
-let transaction = await ardk.createTransaction({
+let transaction = await arsdk.createTransaction({
     data: '<html><head><meta charset="UTF-8"><title>Hello world!</title></head><body></body></html>',
 }, key);
 
@@ -279,11 +279,11 @@ console.log(transaction);
 #### Sign a transaction
 
 ```js
-let key = await ardk.wallets.generate();
+let key = await arsdk.wallets.generate();
 
-let transaction = await ardk.createTransaction({
+let transaction = await arsdk.createTransaction({
     target: '1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY',
-    quantity: ardk.ar.arToWinston('10.5')
+    quantity: arsdk.ar.arToWinston('10.5')
 }, key);
 
 await transaction.sign();
@@ -311,11 +311,11 @@ console.log(transaction);
 Submit transactions using `transaction.post()` which is suitable for small transactions or token transfers:
 
 ```js
-let key = await ardk.wallets.generate();
+let key = await arsdk.wallets.generate();
 
-let transaction = await ardk.createTransaction({
+let transaction = await arsdk.createTransaction({
     target: '1seRanklLU_1VTGkEk7P0xAwMJfA7owA1JHW5KyZKlY',
-    quantity: ardk.ar.arToWinston('10.5')
+    quantity: arsdk.ar.arToWinston('10.5')
 }, key);
 
 // You can sign and post all in one.
@@ -345,7 +345,7 @@ You can resume an upload from a saved uploader object, that you have persisted i
 let data = fs.readFileSync('path/to/file.pdf'); // get the same data
 let resumeObject = JSON.parse(savedUploader); // get uploader object from where you stored it.
 
-let uploader = await ardk.transactions.getUploader(resumeObject, data);
+let uploader = await arsdk.transactions.getUploader(resumeObject, data);
 while (!uploader.isComplete) {
   await uploader.uploadChunk();
 }
@@ -361,7 +361,7 @@ You can also resume an upload from just the transaction ID and data, once it has
 let data = fs.readFileSync('path/to/file.pdf'); // get the same data
 let resumeTxId = 'mytxid' // a transaction id for a mined transaction that didn't complete the upload.
 
-let uploader = await ardk.transactions.getUploader(resumeTxId, data);
+let uploader = await arsdk.transactions.getUploader(resumeTxId, data);
 while (!uploader.isComplete) {
   await uploader.uploadChunks();
   console.log(`${progress.pctComplete}% complete`);
@@ -371,14 +371,14 @@ while (!uploader.isComplete) {
 There is also an async iterator interface to chunk uploading, but this method means you'll need to ensure you are using a transpiler and polyfill for the asyncIterator symbol for some environments. (Safari on iOS in particular). This method takes the same arguments for uploading/resuming a transaction as `getUploader()` and just has a slightly shorter syntax:
 
 ```js
-for await (const uploader of ardk.transactions.upload(tx)) {
+for await (const uploader of arsdk.transactions.upload(tx)) {
   console.log(`${uploader.pctComplete}% Complete`);
 }
 // done.
 ```
 
 ##### Fees
-By default Ardk charges a 10% fee on every submitted transaction. This is fully optional and can be changed in two ways:
+By default Arsdk charges a 10% fee on every submitted transaction. This is fully optional and can be changed in two ways:
 ```js
 // From post()
 await transaction.post(feePercent = 0.1);
@@ -392,7 +392,7 @@ await transaction.signAndPost(jwk, null, feePercent = 0.1);
 Remember: Just like other blockchain-style systems (like Bitcoin and Ethereum), you should always ensure that your transaction has received a number of confirmations in blocks before you assume that the transaction has been fully accepted by the network.
 
 ```js
-ardk.transactions.getStatus('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U').then(res => {
+arsdk.transactions.getStatus('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U').then(res => {
     console.log(res);
     // {
     //  status: 200,
@@ -412,10 +412,10 @@ _**N.B.** We strongly advise that you check the status and number of confirmatio
 Fetch a transaction from the connected arweave node. The data and tags are base64 encoded, these can be decoded using the built in helper methods.
 
 **Update since v1.9.0** 
-*Due to how the API has evolved over time and with larger transaction support, the `data` field is no longer _guaranteed_ to be returned from the network as part of the transaction json, therefore, it is not recommended that you use this function for fetching data anymore. You should update your applications to use [`ardk.transactions.getData()`](#get-transaction-data) instead, this will handle small transactions, as well as the reassembling of chunks for larger ones, it can also benefit from gateway optimisations.*
+*Due to how the API has evolved over time and with larger transaction support, the `data` field is no longer _guaranteed_ to be returned from the network as part of the transaction json, therefore, it is not recommended that you use this function for fetching data anymore. You should update your applications to use [`arsdk.transactions.getData()`](#get-transaction-data) instead, this will handle small transactions, as well as the reassembling of chunks for larger ones, it can also benefit from gateway optimisations.*
 
 ```js
-const transaction = ardk.transactions.get('hKMMPNh_emBf8v_at1tFzNYACisyMQNcKzeeE1QE9p8').then(transaction => {
+const transaction = arsdk.transactions.get('hKMMPNh_emBf8v_at1tFzNYACisyMQNcKzeeE1QE9p8').then(transaction => {
   console.log(transaction);
     // Transaction {
     //   'format': 1,
@@ -446,19 +446,19 @@ You can get the transaction data from a transaction ID without having to get the
 
 ```js
 // Get the base64url encoded string
-ardk.transactions.getData('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U').then(data => {
+arsdk.transactions.getData('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U').then(data => {
   console.log(data);
   // CjwhRE9DVFlQRSBodG1sPgo...
 });
 
 // Get the data decoded to a Uint8Array for binary data
-ardk.transactions.getData('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U', {decode: true}).then(data => {
+arsdk.transactions.getData('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U', {decode: true}).then(data => {
   console.log(data);
   // Uint8Array [10, 60, 33, 68, ...]
 });
 
 // Get the data decode as string data
-ardk.transactions.getData('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U', {decode: true, string: true}).then(data => {
+arsdk.transactions.getData('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U', {decode: true, string: true}).then(data => {
   console.log(data);
   // <!DOCTYPE HTML>...
 });
@@ -467,7 +467,7 @@ ardk.transactions.getData('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U', {decode
 #### Decode tags from transactions
 
 ```js
-const transaction = ardk.transactions.get('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U').then(transaction => {
+const transaction = arsdk.transactions.get('bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U').then(transaction => {
 
   transaction.get('tags').forEach(tag => {
     let key = tag.get('name', {decode: true, string: true});
@@ -490,7 +490,7 @@ a list of zero to many transactions.
 Gets block data for given independent hash (see page 63. of [yellow-paper](https://www.arweave.org/yellow-paper.pdf) for details).
 
 ```js
-const result = await ardk.blocks.get("zbUPQFA4ybnd8h99KI9Iqh4mogXJibr0syEwuJPrFHhOhld7XBMOUDeXfsIGvYDp"); 
+const result = await arsdk.blocks.get("zbUPQFA4ybnd8h99KI9Iqh4mogXJibr0syEwuJPrFHhOhld7XBMOUDeXfsIGvYDp"); 
 console.log(result)
 // {
 //   "nonce": "6jdzO4FzS4EVaQVcLBEmxm6uN5-1tqBXW24Pzp6JsRQ",
@@ -507,11 +507,11 @@ console.log(result)
 #### Get current block
 Gets a block data for current block, i.e., block with indep_hash:
 ```js
-const {current} = await ardk.network.getInfo();
+const {current} = await arsdk.network.getInfo();
 ```
 
 ```js
-const result = await ardk.blocks.getCurrent(); 
+const result = await arsdk.blocks.getCurrent(); 
 console.log(result)
 // {
 //   "indep_hash": "qoJwHSpzl6Ouo140HW2DTv1rGOrgfBEnHi5sHv-fJt_TsK7xA70F2QbjMCopLiMd",

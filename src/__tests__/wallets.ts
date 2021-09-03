@@ -1,4 +1,4 @@
-import Ardk from '../ardk';
+import Arsdk from '../arsdk';
 
 const digestRegex = /^[a-z0-9-_]{43}$/i;
 const liveAddressBalance = '498557055636';
@@ -8,10 +8,10 @@ const liveTxid = 'CE-1SFiXqWUEu0aSTebE6LC0-5JBAc3IAehYGwdF5iI';
 jest.setTimeout(10000);
 
 describe('Wallets and keys', () => {
-  let ardk: Ardk;
+  let arsdk: Arsdk;
 
   beforeAll(() => {
-    ardk = new Ardk({ url: 'https://arweave.net' });
+    arsdk = new Arsdk({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -26,8 +26,8 @@ describe('Wallets and keys', () => {
   });
 
   test('Generate valid JWKs', async () => {
-    const walletA = await ardk.wallets.generate();
-    const walletB = await ardk.wallets.generate();
+    const walletA = await arsdk.wallets.generate();
+    const walletB = await arsdk.wallets.generate();
 
     expect(typeof walletA).toBe('object');
     expect(walletA.kty).toBe('RSA');
@@ -40,8 +40,8 @@ describe('Wallets and keys', () => {
     expect(walletA.dq).toBeDefined();
     expect(walletA.qi).toBeDefined();
 
-    const addressA = await ardk.wallets.jwkToAddress(walletA);
-    const addressB = await ardk.wallets.jwkToAddress(walletB);
+    const addressA = await arsdk.wallets.jwkToAddress(walletA);
+    const addressB = await arsdk.wallets.jwkToAddress(walletB);
 
     expect(typeof addressA).toBe('string');
     expect(addressA).toMatch(digestRegex);
@@ -50,18 +50,18 @@ describe('Wallets and keys', () => {
   });
 
   test('Get wallet info', async () => {
-    const wallet = await ardk.wallets.generate();
-    const address = await ardk.wallets.jwkToAddress(wallet);
-    const balance = await ardk.wallets.getBalance(address);
-    const lastTx = await ardk.wallets.getLastTransactionId(address);
+    const wallet = await arsdk.wallets.generate();
+    const address = await arsdk.wallets.jwkToAddress(wallet);
+    const balance = await arsdk.wallets.getBalance(address);
+    const lastTx = await arsdk.wallets.getLastTransactionId(address);
 
     expect(typeof balance).toBe('string');
     expect(balance).toBe('0');
     expect(typeof lastTx).toBe('string');
     expect(lastTx).toBe('');
 
-    const balanceB = await ardk.wallets.getBalance(liveAddress);
-    const lastTxB = await ardk.wallets.getLastTransactionId(liveAddress);
+    const balanceB = await arsdk.wallets.getBalance(liveAddress);
+    const lastTxB = await arsdk.wallets.getLastTransactionId(liveAddress);
 
     expect(typeof balanceB).toBe('string');
     expect(balanceB).toBe(liveAddressBalance);
@@ -71,7 +71,7 @@ describe('Wallets and keys', () => {
 
   test('Resolve JWK to Address', async () => {
     const jwk = require('./fixtures/arweave-keyfile.json');
-    const address = await ardk.wallets.jwkToAddress(jwk);
+    const address = await arsdk.wallets.jwkToAddress(jwk);
 
     expect(typeof address).toBe('string');
     expect(address).toBe('fOVzBRTBnyt4VrUUYadBH8yras_-jhgpmNgg-5b3vEw');
@@ -79,7 +79,7 @@ describe('Wallets and keys', () => {
 
   test('Public key to address', async () => {
     const jwk = require('./fixtures/arweave-keyfile.json');
-    const address = await ardk.wallets.ownerToAddress(jwk.n);
+    const address = await arsdk.wallets.ownerToAddress(jwk.n);
 
     expect(typeof address).toBe('string');
     expect(address).toBe('fOVzBRTBnyt4VrUUYadBH8yras_-jhgpmNgg-5b3vEw');

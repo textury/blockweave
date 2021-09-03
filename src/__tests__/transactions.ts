@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import Ardk from '../ardk';
+import Arsdk from '../arsdk';
 import Transaction from '../lib/transaction';
 
 const digestRegex = /^[a-z0-9-_]{43}$/i;
@@ -13,10 +13,10 @@ const liveDataTxidLarge = 'KDKSOaecDl_IM4E0_0XiApwdrElvb9TnwOzeHt65Sno';
 jest.setTimeout(10000);
 
 describe('Transactions', () => {
-  let ardk: Ardk;
+  let arsdk: Arsdk;
 
   beforeAll(() => {
-    ardk = new Ardk({ url: 'https://arweave.net' });
+    arsdk = new Arsdk({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -31,19 +31,19 @@ describe('Transactions', () => {
   });
 
   test('getTransactionAnchor', async () => {
-    const txAnchor = await ardk.transactions.getTransactionAnchor();
+    const txAnchor = await arsdk.transactions.getTransactionAnchor();
     expect(txAnchor).toBeDefined();
 
     await pause();
-    const txAnchor2 = await ardk.transactions.getTransactionAnchor();
+    const txAnchor2 = await arsdk.transactions.getTransactionAnchor();
     expect(txAnchor2).toBeDefined();
     expect(txAnchor).toEqual(txAnchor2);
   });
 
   test('Create and sign data transactions', async () => {
-    const wallet = await ardk.wallets.generate();
+    const wallet = await arsdk.wallets.generate();
 
-    const transaction: Transaction = await ardk.createTransaction({ data: 'test' }, wallet);
+    const transaction: Transaction = await arsdk.createTransaction({ data: 'test' }, wallet);
     transaction.addTag('test-tag-1', 'test-value-1');
     transaction.addTag('test-tag-2', 'test-value-2');
     transaction.addTag('test-tag-3', 'test-value-3');
@@ -53,7 +53,7 @@ describe('Transactions', () => {
     expect(transaction.last_tx).toMatch(/^[a-z0-9-_]{64}$/i);
     expect(transaction.reward).toMatch(/^[0-9]+$/);
 
-    await ardk.transactions.sign(transaction, wallet);
+    await arsdk.transactions.sign(transaction, wallet);
     expect(transaction.signature).toMatch(/^[a-z0-9-_]+$/i);
     expect(transaction.id).toMatch(digestRegex);
 
@@ -73,14 +73,14 @@ describe('Transactions', () => {
   });
 
   test('Use JWK.n as transaction owner', async () => {
-    const wallet = await ardk.wallets.generate();
+    const wallet = await arsdk.wallets.generate();
 
-    const transaction = await ardk.createTransaction({ data: 'test' }, wallet);
+    const transaction = await arsdk.createTransaction({ data: 'test' }, wallet);
     expect(transaction.get('owner')).toBe(wallet.n);
   });
 
   test('Use the provided transaction owner attribute', async () => {
-    const transaction = await ardk.createTransaction({
+    const transaction = await arsdk.createTransaction({
       data: 'test',
       owner: 'owner-test-abc',
     });
@@ -89,10 +89,10 @@ describe('Transactions', () => {
   });
 
   test('Create and sign valid transactions when no owner or JWK provided', async () => {
-    const wallet = await ardk.wallets.generate();
+    const wallet = await arsdk.wallets.generate();
 
-    const transaction = await ardk.createTransaction({ data: 'test' });
-    await ardk.transactions.sign(transaction, wallet);
+    const transaction = await arsdk.createTransaction({ data: 'test' });
+    await arsdk.transactions.sign(transaction, wallet);
     expect(transaction.get('owner')).toBe(wallet.n);
 
     const verified = await transaction.verify();
@@ -101,12 +101,12 @@ describe('Transactions', () => {
   });
 
   test('Create and sign ar transactions', async () => {
-    const wallet = await ardk.wallets.generate();
+    const wallet = await arsdk.wallets.generate();
 
-    const transaction = await ardk.createTransaction(
+    const transaction = await arsdk.createTransaction(
       {
         target: 'GRQ7swQO1AMyFgnuAPI7AvGQlW3lzuQuwlJbIpWV7xk',
-        quantity: ardk.ar.arToWinston('1.5'),
+        quantity: arsdk.ar.arToWinston('1.5'),
       },
       wallet,
     );
@@ -119,10 +119,10 @@ describe('Transactions', () => {
   });
 
   test('Using buffers', async () => {
-    const wallet = await ardk.wallets.generate();
+    const wallet = await arsdk.wallets.generate();
 
     const data = randomBytes(100);
-    const tx = await ardk.createTransaction({ data }, wallet);
+    const tx = await arsdk.createTransaction({ data }, wallet);
 
     tx.addTag('test-tag-1', 'test-value-1');
     tx.addTag('test-tag-2', 'test-value-2');
@@ -135,7 +135,7 @@ describe('Transactions', () => {
     expect(tx.last_tx).toMatch(/^[a-z0-9-_]{64}$/i);
     expect(tx.reward).toMatch(/^[0-9]+$/);
 
-    await ardk.transactions.sign(tx, wallet);
+    await arsdk.transactions.sign(tx, wallet);
     expect(tx.signature).toMatch(/^[a-z0-9-_]+$/i);
     expect(tx.id).toMatch(digestRegex);
 
@@ -151,8 +151,8 @@ describe('Transactions', () => {
   });
 
   test('Get transaction info', async () => {
-    const transactionStatus = await ardk.transactions.getStatus(liveDataTxid);
-    const tx = await ardk.transactions.get('g2c8fv2SN1iPZjhWSUbSTUhOLtT2yB-wSf3jvH89Dy4');
+    const transactionStatus = await arsdk.transactions.getStatus(liveDataTxid);
+    const tx = await arsdk.transactions.get('g2c8fv2SN1iPZjhWSUbSTUhOLtT2yB-wSf3jvH89Dy4');
 
     expect(typeof transactionStatus).toBe('object');
     expect(typeof transactionStatus.confirmed).toBe('object');
@@ -181,29 +181,29 @@ describe('Transactions', () => {
   });
 
   test('Get transaction data', async () => {
-    const txRawData = await ardk.transactions.getData(liveDataTxid);
+    const txRawData = await arsdk.transactions.getData(liveDataTxid);
     expect(typeof txRawData).toBe('string');
     expect(txRawData).toContain('CjwhRE9DVFlQRSBodG1sPgo');
 
-    const txDecodeData = await ardk.transactions.getData(liveDataTxid, {
+    const txDecodeData = await arsdk.transactions.getData(liveDataTxid, {
       decode: true,
     });
     expect(txDecodeData.constructor.name).toBe('Uint8Array');
 
-    const txDecodeStringData = await ardk.transactions.getData(liveDataTxid, { decode: true, string: true });
+    const txDecodeStringData = await arsdk.transactions.getData(liveDataTxid, { decode: true, string: true });
     expect(typeof txDecodeStringData).toBe('string');
     expect(txDecodeStringData).toContain('<title>ARWEAVE / PEER EXPLORER</title>');
   });
 
   test('Get transaction data > 12MiB from a gateway', async () => {
-    const data = (await ardk.transactions.getData(liveDataTxidLarge, {
+    const data = (await arsdk.transactions.getData(liveDataTxidLarge, {
       decode: true,
     })) as Uint8Array;
     expect(data.byteLength).toEqual(14166765);
   }, 50000);
 
   test('Find transactions', async () => {
-    const results = await ardk.transactions.search('Silo-Name', 'BmjRGIsemI77+eQb4zX8');
+    const results = await arsdk.transactions.search('Silo-Name', 'BmjRGIsemI77+eQb4zX8');
 
     expect(results).toBeInstanceOf(Array);
     expect(results).toContain('Sgmyo7nUqPpVQWUfK72p5yIpd85QQbhGaWAF-I8L6yE');

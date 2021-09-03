@@ -1,12 +1,12 @@
-import Ardk from '../ardk';
+import Arsdk from '../arsdk';
 
 jest.setTimeout(10000);
 
 describe('Blocks', () => {
-  let ardk: Ardk;
+  let arsdk: Arsdk;
 
   beforeAll(() => {
-    ardk = new Ardk({ url: 'https://arweave.net' });
+    arsdk = new Arsdk({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe('Blocks', () => {
     const expectedResult = require(`./fixtures/block_${blockIndepHash}.json`);
 
     // when
-    const result = (await ardk.blocks.get(blockIndepHash)) as any; // note: any to be able to access object values by keys.
+    const result = (await arsdk.blocks.get(blockIndepHash)) as any; // note: any to be able to access object values by keys.
 
     // then
     expect(expectedResult).toStrictEqual(result);
@@ -35,10 +35,10 @@ describe('Blocks', () => {
 
   test("Get current block's data", async () => {
     // given
-    const { current } = await ardk.network.getInfo();
+    const { current } = await arsdk.network.getInfo();
 
     // when
-    const result = await ardk.blocks.getCurrent();
+    const result = await arsdk.blocks.getCurrent();
 
     // then
     expect(result.indep_hash).toBe(current);
