@@ -232,7 +232,6 @@ export default class Transactions {
 
   /**
    * Gets an uploader than can be used to upload a transaction chunk by chunk, giving progress
-   * @deprecated getUploader is now part of TransactionUploader
    * @param upload a Transaction object, a previously save progress object, or a transaction id.
    * @param data the data of the transaction. Required when resuming an upload.
    */
@@ -243,7 +242,6 @@ export default class Transactions {
 
   /**
    * Async generator version of uploader
-   * @deprecated *upload is now part of TransactionUploader
    * @param {Transaction} upload a Transaction object, a previously save uploader, or a transaction id.
    * @param {Uint8Array} data the data of the transaction. Required when resuming an upload.
    */
