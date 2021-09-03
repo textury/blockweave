@@ -47,19 +47,19 @@ export default class Api {
    */
   public request(): AxiosInstance {
     const instance = axios.create({
-      baseURL: `${this.config.url}`,
-      timeout: this.config.timeout,
+      baseURL: `${this._config.url}`,
+      timeout: this._config.timeout,
       maxContentLength: 1024 * 1024 * 512,
     });
 
-    if (this.config.logging) {
+    if (this._config.logging) {
       instance.interceptors.request.use((request) => {
-        this.config.logger!.log(`Requesting: ${request.baseURL}/${request.url}`);
+        this._config.logger!.log(`Requesting: ${request.baseURL}/${request.url}`);
         return request;
       });
 
       instance.interceptors.response.use((response) => {
-        this.config.logger!.log(`Response:   ${response.config.url} - ${response.status}`);
+        this._config.logger!.log(`Response:   ${response.config.url} - ${response.status}`);
         return response;
       });
     }
@@ -83,13 +83,13 @@ export default class Api {
     body?: Buffer | string | object,
   ): Promise<AxiosResponse> {
     const previous = this.config;
-    const tmpTrusted: string[] = [this.config.url, ...this.trustedHosts];
+    const tmpTrusted: string[] = [this._config.url, ...this.trustedHosts];
     const total = tmpTrusted.length;
     let current = 0;
 
     const run = async () => {
       try {
-        this._config = this.mergeDefaults({ url: tmpTrusted.splice(0, 1)[0] });
+        this._config = this.mergeDefaults({ url: tmpTrusted.splice(0, 1)[0], timeout: this.config.timeout, logger: this.config.logger, logging: this.config.logging });
         endpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
 
         if (type === 'GET') {
@@ -145,7 +145,7 @@ export default class Api {
     }
 
     config.timeout = config.timeout || 20000;
-    config.logging = config.logging || false;
+    config.logging = config.logging ? true : false;
     config.logger = config.logger || console;
 
     return config;

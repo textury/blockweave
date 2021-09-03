@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import Arweave from '../arweave';
+import Arpi from '../arpi';
 import transaction from '../lib/transaction';
 import Transaction from '../lib/transaction';
 import { b64UrlToBuffer, bufferTob64Url } from '../utils/buffer';
@@ -12,11 +12,13 @@ const liveDataTxid = 'bNbA3TEQVL60xlgCcqdz4ZPHFZ711cZ3hmkpGttDt_U';
 // const liveDataTxidLarge = "P4l6aCN97rt4GoyrpG1oKq3A20B2Y24GqmMLWNZlNIk"
 const liveDataTxidLarge = 'KDKSOaecDl_IM4E0_0XiApwdrElvb9TnwOzeHt65Sno';
 
+jest.setTimeout(10000);
+
 describe('Transactions', () => {
-  let arweave: Arweave;
+  let arpi: Arpi;
 
   beforeAll(() => {
-    arweave = new Arweave({ url: 'https://arweave.net', logging: true });
+    arpi = new Arpi({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -31,19 +33,19 @@ describe('Transactions', () => {
   });
 
   test('getTransactionAnchor', async () => {
-    const txAnchor = await arweave.transactions.getTransactionAnchor();
+    const txAnchor = await arpi.transactions.getTransactionAnchor();
     expect(txAnchor).toBeDefined();
 
     await pause();
-    const txAnchor2 = await arweave.transactions.getTransactionAnchor();
+    const txAnchor2 = await arpi.transactions.getTransactionAnchor();
     expect(txAnchor2).toBeDefined();
     expect(txAnchor).toEqual(txAnchor2);
   });
 
   test('Create and sign data transactions', async () => {
-    const wallet = await arweave.wallets.generate();
+    const wallet = await arpi.wallets.generate();
 
-    const transaction: Transaction = await arweave.createTransaction({ data: 'test' }, wallet);
+    const transaction: Transaction = await arpi.createTransaction({ data: 'test' }, wallet);
     transaction.addTag('test-tag-1', 'test-value-1');
     transaction.addTag('test-tag-2', 'test-value-2');
     transaction.addTag('test-tag-3', 'test-value-3');
@@ -53,11 +55,11 @@ describe('Transactions', () => {
     expect(transaction.last_tx).toMatch(/^[a-z0-9-_]{64}$/i);
     expect(transaction.reward).toMatch(/^[0-9]+$/);
 
-    await arweave.transactions.sign(transaction, wallet);
+    await arpi.transactions.sign(transaction, wallet);
     expect(transaction.signature).toMatch(/^[a-z0-9-_]+$/i);
     expect(transaction.id).toMatch(digestRegex);
 
-    const verified = await arweave.transactions.verify(transaction);
+    const verified = await transaction.verify();
     expect(typeof verified).toBe('boolean');
     expect(verified).toBeTruthy();
 
@@ -65,7 +67,7 @@ describe('Transactions', () => {
     // normally an allowed operation, but it's a test, so...
     transaction.tags[1].value = 'dGVzdDI';
 
-    const verifiedWithModififedTags = await arweave.transactions.verify(transaction);
+    const verifiedWithModififedTags = await transaction.verify();
 
     expect(typeof verifiedWithModififedTags).toBe('boolean');
 
@@ -73,14 +75,14 @@ describe('Transactions', () => {
   });
 
   test('Use JWK.n as transaction owner', async () => {
-    const wallet = await arweave.wallets.generate();
+    const wallet = await arpi.wallets.generate();
 
-    const transaction = await arweave.createTransaction({ data: 'test' }, wallet);
+    const transaction = await arpi.createTransaction({ data: 'test' }, wallet);
     expect(transaction.get('owner')).toBe(wallet.n);
   });
 
   test('Use the provided transaction owner attribute', async () => {
-    const transaction = await arweave.createTransaction({
+    const transaction = await arpi.createTransaction({
       data: 'test',
       owner: 'owner-test-abc',
     });
@@ -89,24 +91,24 @@ describe('Transactions', () => {
   });
 
   test('Create and sign valid transactions when no owner or JWK provided', async () => {
-    const wallet = await arweave.wallets.generate();
+    const wallet = await arpi.wallets.generate();
 
-    const transaction = await arweave.createTransaction({ data: 'test' });
-    await arweave.transactions.sign(transaction, wallet);
+    const transaction = await arpi.createTransaction({ data: 'test' });
+    await arpi.transactions.sign(transaction, wallet);
     expect(transaction.get('owner')).toBe(wallet.n);
 
-    const verified = await arweave.transactions.verify(transaction);
+    const verified = await transaction.verify();
     expect(verified).toBeTruthy();
     expect(typeof verified).toBe('boolean');
   });
 
   test('Create and sign ar transactions', async () => {
-    const wallet = await arweave.wallets.generate();
+    const wallet = await arpi.wallets.generate();
 
-    const transaction = await arweave.createTransaction(
+    const transaction = await arpi.createTransaction(
       {
         target: 'GRQ7swQO1AMyFgnuAPI7AvGQlW3lzuQuwlJbIpWV7xk',
-        quantity: arweave.ar.arToWinston('1.5'),
+        quantity: arpi.ar.arToWinston('1.5'),
       },
       wallet,
     );
@@ -119,10 +121,10 @@ describe('Transactions', () => {
   });
 
   test('Using buffers', async () => {
-    const wallet = await arweave.wallets.generate();
+    const wallet = await arpi.wallets.generate();
 
     const data = randomBytes(100);
-    const tx = await arweave.createTransaction({ data }, wallet);
+    const tx = await arpi.createTransaction({ data }, wallet);
 
     tx.addTag('test-tag-1', 'test-value-1');
     tx.addTag('test-tag-2', 'test-value-2');
@@ -135,24 +137,24 @@ describe('Transactions', () => {
     expect(tx.last_tx).toMatch(/^[a-z0-9-_]{64}$/i);
     expect(tx.reward).toMatch(/^[0-9]+$/);
 
-    await arweave.transactions.sign(tx, wallet);
+    await arpi.transactions.sign(tx, wallet);
     expect(tx.signature).toMatch(/^[a-z0-9-_]+$/i);
     expect(tx.id).toMatch(digestRegex);
 
-    const verified = await arweave.transactions.verify(tx);
+    const verified = await tx.verify();
     expect(typeof verified).toBe('boolean');
     expect(verified).toBeTruthy();
 
     // Only for testing purposes. Do not change the tags like this.
     tx.tags[1].value = 'dGVzdDI';
-    const verifiedWithModififedTags = await arweave.transactions.verify(tx);
+    const verifiedWithModififedTags = await tx.verify();
     expect(typeof verifiedWithModififedTags).toBe('boolean');
     expect(verifiedWithModififedTags).toBeFalsy();
-  }, 10000);
+  });
 
   test('Get transaction info', async () => {
-    const transactionStatus = await arweave.transactions.getStatus(liveDataTxid);
-    const tx = await arweave.transactions.get('g2c8fv2SN1iPZjhWSUbSTUhOLtT2yB-wSf3jvH89Dy4');
+    const transactionStatus = await arpi.transactions.getStatus(liveDataTxid);
+    const tx = await arpi.transactions.get('g2c8fv2SN1iPZjhWSUbSTUhOLtT2yB-wSf3jvH89Dy4');
 
     expect(typeof transactionStatus).toBe('object');
     expect(typeof transactionStatus.confirmed).toBe('object');
@@ -167,12 +169,12 @@ describe('Transactions', () => {
     expect(typeof transactionStatus.confirmed!.block_height).toBe('number');
     expect(typeof transactionStatus.confirmed!.number_of_confirmations).toBe('number');
 
-    expect(await arweave.transactions.verify(tx)).toBeTruthy();
+    expect(await tx.verify()).toBeTruthy();
 
     tx.signature = 'xxx';
 
     try {
-      await arweave.transactions.verify(tx);
+      await tx.verify();
     } catch (e) {
       expect(e.message).toBe(
         "Invalid transaction signature or ID! The transaction ID doesn't match the expected SHA-256 hash of the signature.",
@@ -181,29 +183,29 @@ describe('Transactions', () => {
   });
 
   test('Get transaction data', async () => {
-    const txRawData = await arweave.transactions.getData(liveDataTxid);
+    const txRawData = await arpi.transactions.getData(liveDataTxid);
     expect(typeof txRawData).toBe('string');
     expect(txRawData).toContain('CjwhRE9DVFlQRSBodG1sPgo');
 
-    const txDecodeData = await arweave.transactions.getData(liveDataTxid, {
+    const txDecodeData = await arpi.transactions.getData(liveDataTxid, {
       decode: true,
     });
     expect(txDecodeData.constructor.name).toBe('Uint8Array');
 
-    const txDecodeStringData = await arweave.transactions.getData(liveDataTxid, { decode: true, string: true });
+    const txDecodeStringData = await arpi.transactions.getData(liveDataTxid, { decode: true, string: true });
     expect(typeof txDecodeStringData).toBe('string');
     expect(txDecodeStringData).toContain('<title>ARWEAVE / PEER EXPLORER</title>');
   });
 
   test('Get transaction data > 12MiB from a gateway', async () => {
-    const data = (await arweave.transactions.getData(liveDataTxidLarge, {
+    const data = (await arpi.transactions.getData(liveDataTxidLarge, {
       decode: true,
     })) as Uint8Array;
     expect(data.byteLength).toEqual(14166765);
   }, 50000);
 
   test('Find transactions', async () => {
-    const results = await arweave.transactions.search('Silo-Name', 'BmjRGIsemI77+eQb4zX8');
+    const results = await arpi.transactions.search('Silo-Name', 'BmjRGIsemI77+eQb4zX8');
 
     expect(results).toBeInstanceOf(Array);
     expect(results).toContain('Sgmyo7nUqPpVQWUfK72p5yIpd85QQbhGaWAF-I8L6yE');

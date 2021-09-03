@@ -4,6 +4,9 @@ import { b64UrlToBuffer } from './buffer';
 import { SerializedUploader } from '../faces/utils/transactionUploader';
 import Merkle from './merkle';
 import { AxiosResponse } from 'axios';
+import CryptoInterface from '../faces/utils/crypto';
+import selectWeightedHolder from './fee';
+import Arpi from '../arpi';
 
 // Maximum amount of chunks we will upload in the body.
 const MAX_CHUNKS_IN_BODY = 1;
@@ -40,6 +43,8 @@ export class TransactionUploader {
   public lastResponseStatus: number = 0;
   public lastResponseError: string = '';
 
+  private arpi: Arpi;
+  private crypto: CryptoInterface;
   private merkle: Merkle;
 
   public get isComplete(): boolean {
@@ -58,18 +63,23 @@ export class TransactionUploader {
     return Math.trunc((this.uploadedChunks / this.totalChunks) * 100);
   }
 
-  constructor(private api: Api, transaction: Transaction) {
-    if (!transaction.id) {
-      throw new Error(`Transaction is not signed`);
-    }
-    if (!transaction.chunks) {
-      throw new Error(`Transaction chunks not prepared`);
-    }
-    // Make a copy of transaction, zeroing the data so we can serialize.
-    this.data = transaction.data;
-    this.transaction = new Transaction(Object.assign({}, transaction, { data: new Uint8Array(0) }));
-
+  constructor(arpi: Arpi, transaction: Transaction | SerializedUploader | string, crypto: CryptoInterface) {
+    this.arpi = arpi;
+    this.crypto = crypto;
     this.merkle = new Merkle();
+
+    if (transaction instanceof Transaction) {
+      if (!transaction.id) {
+        throw new Error(`Transaction is not signed`);
+      }
+      if (!transaction.chunks) {
+        throw new Error(`Transaction chunks not prepared`);
+      }
+      // Make a copy of transaction, zeroing the data so we can serialize.
+      this.data = transaction.data;
+      this.transaction = new Transaction(Object.assign({}, transaction, { data: new Uint8Array(0) }), this.arpi);
+    }
+
   }
 
   /**
@@ -101,6 +111,7 @@ export class TransactionUploader {
     if (delay > 0) {
       // Jitter delay bcoz networks, subtract up to 30% from 40 seconds
       delay = delay - delay * Math.random() * 0.3;
+      // tslint:disable-next-line: no-shadowed-variable
       await new Promise((res) => setTimeout(res, delay));
     }
 
@@ -125,7 +136,7 @@ export class TransactionUploader {
     }
 
     // Catch network errors and turn them into objects with status -1 and an error message.
-    const res = await this.api.post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data)).catch((e) => {
+    const res = await this.arpi.api.post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data)).catch((e) => {
       console.error(e.message);
       return { status: -1, data: { error: e.message } };
     });
@@ -152,9 +163,10 @@ export class TransactionUploader {
    * @param data
    */
   public static async fromSerialized(
-    api: Api,
+    arpi: Arpi,
     serialized: SerializedUploader,
     data: Uint8Array,
+    crypto: CryptoInterface,
   ): Promise<TransactionUploader> {
     if (!serialized || typeof serialized.chunkIndex !== 'number' || typeof serialized.transaction !== 'object') {
       throw new Error(`Serialized object does not match expected format.`);
@@ -163,7 +175,7 @@ export class TransactionUploader {
     // Everything looks ok, reconstruct the TransactionUpload,
     // prepare the chunks again and verify the data_root matches
 
-    const upload = new TransactionUploader(api, new Transaction(serialized.transaction));
+    const upload = new TransactionUploader(arpi, new Transaction(serialized.transaction, arpi), crypto);
 
     // Copy the serialized upload information, and data passed in.
     upload.chunkIndex = serialized.chunkIndex;
@@ -231,7 +243,7 @@ export class TransactionUploader {
       // Post the transaction with data.
       this.transaction.data = this.data;
       try {
-        res = await this.api.post(`tx`, this.transaction);
+        res = await this.arpi.api.post(`tx`, this.transaction);
       } catch (e) {
         console.error(e);
         res = { status: -1, data: { error: e.message } };
@@ -253,7 +265,7 @@ export class TransactionUploader {
     }
 
     // Post the transaction with no data.
-    res = await this.api.post(`tx`, this.transaction);
+    res = await this.arpi.api.post(`tx`, this.transaction);
     this.lastRequestTimeEnd = Date.now();
     this.lastResponseStatus = res.status;
     if (!(res.status >= 200 && res.status < 300)) {
@@ -261,5 +273,72 @@ export class TransactionUploader {
       throw new Error(`Unable to upload transaction: ${res.status}, ${this.lastResponseError}`);
     }
     this.txPosted = true;
+  }
+
+  /**
+   * Gets an uploader than can be used to upload a transaction chunk by chunk, giving progress
+   * and the ability to resume.
+   *
+   * Usage example:
+   *
+   * ```
+   * const uploader = arpi.transactions.getUploader(transaction);
+   * while (!uploader.isComplete) {
+   *   await uploader.uploadChunk();
+   *   console.log(`${uploader.pctComplete}%`);
+   * }
+   * ```
+   *
+   * @param upload a Transaction object, a previously save progress object, or a transaction id.
+   * @param data the data of the transaction. Required when resuming an upload.
+   */
+  async getUploader(upload: Transaction | SerializedUploader | string, data?: Uint8Array | ArrayBuffer): Promise<TransactionUploader> {
+    let uploader!: TransactionUploader;
+
+    if (upload instanceof Transaction) {
+      uploader = new TransactionUploader(this.arpi, upload, this.crypto);
+    } else {
+      if (data instanceof ArrayBuffer) {
+        data = new Uint8Array(data);
+      }
+
+      if (!data || data.constructor.name !== 'Uint8Array') {
+        throw new Error(`Must provide data when resuming upload`);
+      }
+
+      if (typeof upload === 'string') {
+        upload = await TransactionUploader.fromTransactionId(this.arpi.api, upload);
+      }
+
+      // upload should be a serialized upload.
+      uploader = await TransactionUploader.fromSerialized(this.arpi, upload, data as Uint8Array, this.crypto);
+    }
+
+    return uploader;
+  }
+
+  /**
+   * Async generator version of uploader
+   *
+   * Usage example:
+   *
+   * ```
+   * for await (const uploader of arpi.transactions.upload(tx)) {
+   *  console.log(`${uploader.pctComplete}%`);
+   * }
+   * ```
+   *
+   * @param {Transaction|SerializedUploader|string} upload a Transaction object, a previously save uploader, or a transaction id.
+   * @param {Uint8Array} data the data of the transaction. Required when resuming an upload.
+   */
+  async *upload(upload: Transaction | SerializedUploader | string, data?: Uint8Array) {
+    const uploader = await this.getUploader(upload, data);
+
+    while (!uploader.isComplete) {
+      await uploader.uploadChunk();
+      yield uploader;
+    }
+
+    return uploader;
   }
 }

@@ -2,8 +2,6 @@ import { BaseObjectInterface } from '../faces/utils/baseObject';
 import { bufferToString, bufferTob64Url, b64UrlToString, b64UrlToBuffer } from './buffer';
 
 export class BaseObject implements BaseObjectInterface {
-  [key: string]: any;
-
   public get(field: string, options?: { decode: true; string: true }): string;
   public get(field: string, options: { decode: true; string: false }): Uint8Array;
 

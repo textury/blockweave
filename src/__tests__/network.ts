@@ -1,11 +1,11 @@
-import Arweave from '../arweave';
+import Arpi from '../arpi';
 import { NetworkInfoInterface, PeerList } from '../faces/lib/network';
 
 describe('NETWORK', () => {
-  let arweave: Arweave;
+  let arpi: Arpi;
 
   beforeAll(() => {
-    arweave = new Arweave({ url: 'https://arweave.net' });
+    arpi = new Arpi({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('NETWORK', () => {
   });
 
   test('getInfo', async () => {
-    const info: NetworkInfoInterface = await arweave.network.getInfo();
+    const info: NetworkInfoInterface = await arpi.network.getInfo();
 
     expect(info).toBeInstanceOf(Object);
     expect(typeof info.network).toBe('string');
@@ -35,7 +35,7 @@ describe('NETWORK', () => {
   });
 
   test('getPeers', async () => {
-    const peers: PeerList = await arweave.network.getPeers();
+    const peers: PeerList = await arpi.network.getPeers();
 
     expect(peers.length).toBeGreaterThan(0);
     expect(typeof peers[0]).toBe('string');

@@ -1,11 +1,14 @@
 import { NetworkInfoInterface, PeerList } from '../faces/lib/network';
+import { ArCacheInterface } from '../faces/utils/arCache';
 import Api from './api';
 
 export class Network {
   private api: Api;
+  private cache: ArCacheInterface;
 
-  constructor(api: Api) {
+  constructor(api: Api, cache?: ArCacheInterface) {
     this.api = api;
+    this.cache = cache;
   }
 
   /**
@@ -13,8 +16,16 @@ export class Network {
    * @returns Promise which resolves in the network info object of the current gateway
    */
   public async getInfo(): Promise<NetworkInfoInterface> {
-    const res = await this.api.get('info');
-    return res.data;
+    let data: NetworkInfoInterface = this.cache && (await this.cache.get('network_info'));
+    if (!data) {
+      const res = await this.api.get('info');
+      data = res.data;
+
+      if (this.cache) {
+        this.cache.set('network_info', data, 2 * 60 * 1000); // 2 minutes
+      }
+    }
+    return data;
   }
 
   /**

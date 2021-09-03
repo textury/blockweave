@@ -52,7 +52,7 @@ export default class Wallets {
   }
 
   /**
-   * Generate a new Arweave wallet JSON object (JWK).
+   * Generate a new Arpi wallet JSON object (JWK).
    * @returns Promise which resolves in the JWK.
    */
   public async generate(): Promise<JWKInterface> {
@@ -95,7 +95,9 @@ export default class Wallets {
     let res: string = this.cache && (await this.cache.get(`ownerToAddress-${owner}`));
     if (!res) {
       res = b64UrlEncode(bufferTob64(await this.crypto.hash(new Uint8Array(B64js.toByteArray(b64UrlDecode(owner))))));
-      this.cache && this.cache.set(`ownerToAddress-${owner}`, res);
+      if (this.cache) {
+        this.cache.set(`ownerToAddress-${owner}`, res);
+      }
     }
 
     return res;

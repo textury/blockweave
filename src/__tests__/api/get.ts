@@ -1,11 +1,11 @@
 import axios from 'axios';
-import Arweave from '../../arweave';
+import Arpi from '../../arpi';
 
 describe('API GET', () => {
-  let arweave: Arweave;
+  let arpi: Arpi;
 
   beforeAll(() => {
-    arweave = new Arweave({ url: 'https://arweave.net' });
+    arpi = new Arpi({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('API GET', () => {
   });
 
   test('/info', async () => {
-    const res = await arweave.api.get('/info');
+    const res = await arpi.api.get('/info');
 
     expect(res.status).toBe(200);
     expect(res.data).toEqual({
@@ -37,7 +37,7 @@ describe('API GET', () => {
   });
 
   test('info', async () => {
-    const res = await arweave.api.get('info');
+    const res = await arpi.api.get('info');
 
     expect(res.status).toBe(200);
     expect(res.data).toEqual({
@@ -54,7 +54,7 @@ describe('API GET', () => {
   });
 
   test('info on invalid gateway, should be replaced to an active one', async () => {
-    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', logging: true });
+    const inst = new Arpi({ url: 'https://hasdfhahsdflkajsdf.com' });
     const res = await inst.api.get('info');
 
     expect(inst.api.config.host).not.toBe('hasdfhahsdflkajsdf.com');
@@ -73,7 +73,7 @@ describe('API GET', () => {
   });
 
   test("info on invalid gateway with invalid trusted hosts, shouldn't be replaced", async () => {
-    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', logging: true }, ['https://hasdhfhasdf.com']);
+    const inst = new Arpi({ url: 'https://hasdfhahsdflkajsdf.com' }, ['https://hasdhfhasdf.com']);
     jest.spyOn(axios, 'get').mockRejectedValue(new Error('error'));
 
     await expect(inst.api.get('info')).rejects.toThrow();
@@ -81,7 +81,7 @@ describe('API GET', () => {
   });
 
   test("info on invalid localhost, shouldn't be replaced", async () => {
-    const inst = new Arweave({ url: 'https://localhost:9876', logging: true });
+    const inst = new Arpi({ url: 'https://localhost:9876' });
     jest.spyOn(axios, 'get').mockRejectedValue(new Error('error'));
 
     await expect(inst.api.get('info')).rejects.toThrow();

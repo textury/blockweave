@@ -1,5 +1,6 @@
 import { JWKInterface } from '../faces/lib/wallet';
 import CryptoInterface, { SignatureOptions } from '../faces/utils/crypto';
+import { concatBuffers, stringToBuffer } from './buffer';
 
 export default class CryptoDriver implements CryptoInterface {
   public readonly keyLength = 4096;
@@ -96,7 +97,7 @@ export default class CryptoDriver implements CryptoInterface {
   public async encrypt(data: Buffer, key: string | Buffer, salt?: string): Promise<Uint8Array> {
     const intialKey = await this.driver.importKey(
       'raw',
-      typeof key === 'string' ? Buffer.from(key, 'utf8') : key,
+      typeof key === 'string' ? stringToBuffer(key) : key,
       {
         name: 'PBKDF2',
         length: 32,
@@ -108,7 +109,7 @@ export default class CryptoDriver implements CryptoInterface {
     const derivedKey = await this.driver.deriveKey(
       {
         name: 'PBKDF2',
-        salt: salt ? Buffer.from(salt, 'utf8') : Buffer.from('salt', 'utf8'),
+        salt: salt ? stringToBuffer(salt) : stringToBuffer('salt'),
         iterations: 100000,
         hash: this.hashAlgorithm,
       },
@@ -133,13 +134,13 @@ export default class CryptoDriver implements CryptoInterface {
       data,
     );
 
-    return Buffer.concat([Buffer.from(iv), Buffer.from(encryptedData)]);
+    return concatBuffers([iv, encryptedData, encryptedData]);
   }
 
   public async decrypt(encrypted: Buffer, key: string | Buffer, salt?: string): Promise<Uint8Array> {
     const intialKey = await this.driver.importKey(
       'raw',
-      typeof key === 'string' ? Buffer.from(key, 'utf8') : key,
+      typeof key === 'string' ? stringToBuffer(key) : key,
       {
         name: 'PBKDF2',
         length: 32,
@@ -151,7 +152,7 @@ export default class CryptoDriver implements CryptoInterface {
     const derivedKey = await this.driver.deriveKey(
       {
         name: 'PBKDF2',
-        salt: salt ? Buffer.from(salt, 'utf8') : Buffer.from('salt', 'utf8'),
+        salt: salt ? stringToBuffer(salt) : stringToBuffer('salt'),
         iterations: 100000,
         hash: this.hashAlgorithm,
       },

@@ -1,13 +1,13 @@
 import axios from 'axios';
-import Arweave from '../../arweave';
+import Arpi from '../../arpi';
 
 jest.setTimeout(30000);
 
 describe('API POST', () => {
-  let arweave: Arweave;
+  let arpi: Arpi;
 
   beforeAll(() => {
-    arweave = new Arweave({ url: 'https://arweave.net', logging: true });
+    arpi = new Arpi({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('API POST', () => {
 
   test('/graphql', async () => {
     const txs = (
-      await arweave.api.post('graphql', {
+      await arpi.api.post('graphql', {
         query: `
       {
         transactions(
@@ -46,7 +46,7 @@ describe('API POST', () => {
   });
 
   test('graphql on invalid gateway, should be replaced to an active one', async () => {
-    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', logging: true });
+    const inst = new Arpi({ url: 'https://hasdfhahsdflkajsdf.com' });
     const txs = (
       await inst.api.post('graphql', {
         query: `
@@ -72,7 +72,7 @@ describe('API POST', () => {
   });
 
   test("graphql on invalid gateway with invalid trusted hosts, shouldn't be replaced", async () => {
-    const inst = new Arweave({ url: 'https://hasdfhahsdflkajsdf.com', logging: true }, ['https://hasdhfhasdf.com']);
+    const inst = new Arpi({ url: 'https://hasdfhahsdflkajsdf.com' }, ['https://hasdhfhasdf.com']);
     jest.spyOn(axios, 'post').mockRejectedValue(new Error('error'));
 
     await expect(
@@ -97,7 +97,7 @@ describe('API POST', () => {
   });
 
   test("graphql on invalid localhost, shouldn't be replaced", async () => {
-    const inst = new Arweave({ url: 'https://localhost:9876', logging: true });
+    const inst = new Arpi({ url: 'https://localhost:9876' });
     jest.spyOn(axios, 'post').mockRejectedValue(new Error('error'));
 
     await expect(
