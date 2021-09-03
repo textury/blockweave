@@ -415,6 +415,5 @@ export default class Transaction extends BaseObject implements TransactionInterf
     tx.addTag('Size', this.data_size);
 
     await tx.signAndPost(this.jwk, null, 0);
-    console.log(tx.id);
   }
 }

@@ -14,11 +14,13 @@ import Transaction from './lib/transaction';
 import * as SmartWeaveSdk from 'redstone-smartweave';
 import * as arpiUtils from './utils/buffer';
 import Logging from './utils/logging';
+import Blocks from './lib/blocks';
 
 export default class Arpi {
   public api: Api;
   public wallets: Wallets;
   public transactions: Transactions;
+  public blocks: Blocks;
   public network: Network;
   public ar: Ar;
   public chunks: Chunks;

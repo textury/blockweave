@@ -3,7 +3,7 @@ We did a performance comparison using [kelonio](https://www.npmjs.com/package/ke
 TODO: Update this after adding fees
 The final results are a difference of **74% (1,046 ms)**:
 ```
-arpi: 889ms
+arpi: 961 ms
 arweave: 1935ms
 ```
 

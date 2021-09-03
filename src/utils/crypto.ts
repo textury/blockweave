@@ -46,7 +46,7 @@ export default class CryptoDriver implements CryptoInterface {
     };
   }
 
-  public async sign(jwk: JWKInterface, data: Uint8Array, { saltLength }: SignatureOptions = {}): Promise<Uint8Array> {
+  public async sign(jwk: JWKInterface, data: Uint8Array, signOpts: SignatureOptions = {}): Promise<Uint8Array> {
     const signature = await this.driver.sign(
       {
         name: 'RSA-PSS',
@@ -58,6 +58,7 @@ export default class CryptoDriver implements CryptoInterface {
 
     return new Uint8Array(signature);
   }
+
   public async hash(data: Uint8Array, algorithm: string = this.hashAlgorithm): Promise<Uint8Array> {
     const digest = await this.driver.digest(algorithm, data);
     return new Uint8Array(digest);

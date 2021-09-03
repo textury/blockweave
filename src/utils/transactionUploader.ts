@@ -279,16 +279,6 @@ export class TransactionUploader {
    * Gets an uploader than can be used to upload a transaction chunk by chunk, giving progress
    * and the ability to resume.
    *
-   * Usage example:
-   *
-   * ```
-   * const uploader = arpi.transactions.getUploader(transaction);
-   * while (!uploader.isComplete) {
-   *   await uploader.uploadChunk();
-   *   console.log(`${uploader.pctComplete}%`);
-   * }
-   * ```
-   *
    * @param upload a Transaction object, a previously save progress object, or a transaction id.
    * @param data the data of the transaction. Required when resuming an upload.
    */
@@ -319,15 +309,6 @@ export class TransactionUploader {
 
   /**
    * Async generator version of uploader
-   *
-   * Usage example:
-   *
-   * ```
-   * for await (const uploader of arpi.transactions.upload(tx)) {
-   *  console.log(`${uploader.pctComplete}%`);
-   * }
-   * ```
-   *
    * @param {Transaction|SerializedUploader|string} upload a Transaction object, a previously save uploader, or a transaction id.
    * @param {Uint8Array} data the data of the transaction. Required when resuming an upload.
    */
