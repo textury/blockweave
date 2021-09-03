@@ -134,7 +134,7 @@ export default class Transactions {
       });
 
       return res.data.data.transactions.edges.map((e) => e.node.id);
-    } catch { }
+    } catch {}
 
     return [];
   }

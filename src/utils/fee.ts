@@ -42,9 +42,7 @@ export default async function selectWeightedHolder(arsdk: Arsdk): Promise<string
   return;
 }
 
-async function getState(
-  arsdk: Arsdk,
-): Promise<{
+async function getState(arsdk: Arsdk): Promise<{
   balances: { [key: string]: number };
   vault: { [key: string]: [{ balance: number; start: number; end: number }] };
 }> {

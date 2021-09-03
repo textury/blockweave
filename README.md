@@ -39,7 +39,11 @@ Coming from [Arweave JS](https://github.com/ArweaveTeam/arweave-js/)? See some k
 ## Installation
 ### NPM
 ```bash
+# NPM
 npm install --save arsdk
+
+# Yarn
+yarn add arsdk
 ```
 
 ### Bundles
@@ -64,7 +68,7 @@ Single bundle file (web only - use the NPM method if using Node).
 
 ### Node Module
 ```js
-const Arsdk = require('arsdk');
+import Arsdk from 'arsdk';
 
 // If you want to connect directly to a gateway
 const arsdk = new Arsdk({url: 'https://arweave.net'});

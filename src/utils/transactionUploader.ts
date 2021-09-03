@@ -1,12 +1,11 @@
-import Transaction from '../lib/transaction';
-import Api from '../lib/api';
-import { b64UrlToBuffer } from './buffer';
-import { SerializedUploader } from '../faces/utils/transactionUploader';
-import Merkle from './merkle';
 import { AxiosResponse } from 'axios';
-import CryptoInterface from '../faces/utils/crypto';
-import selectWeightedHolder from './fee';
 import Arsdk from '../arsdk';
+import CryptoInterface from '../faces/utils/crypto';
+import { SerializedUploader } from '../faces/utils/transactionUploader';
+import Api from '../lib/api';
+import Transaction from '../lib/transaction';
+import { b64UrlToBuffer } from './buffer';
+import Merkle from './merkle';
 
 // Maximum amount of chunks we will upload in the body.
 const MAX_CHUNKS_IN_BODY = 1;
