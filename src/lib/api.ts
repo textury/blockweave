@@ -89,7 +89,12 @@ export default class Api {
 
     const run = async () => {
       try {
-        this._config = this.mergeDefaults({ url: tmpTrusted.splice(0, 1)[0], timeout: this.config.timeout, logger: this.config.logger, logging: this.config.logging });
+        this._config = this.mergeDefaults({
+          url: tmpTrusted.splice(0, 1)[0],
+          timeout: this.config.timeout,
+          logger: this.config.logger,
+          logging: this.config.logging,
+        });
         endpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
 
         if (type === 'GET') {

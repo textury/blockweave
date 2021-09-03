@@ -1,4 +1,4 @@
-import { TagInterface } from "./tag";
+import { TagInterface } from './tag';
 
 export interface BlockInterface {
   nonce: string;

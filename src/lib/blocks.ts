@@ -1,9 +1,9 @@
-import Api from "./api";
-import { Tag } from "./tag";
-import "arconnect";
-import { Network } from "./network";
-import { BlockInterface } from "../faces/lib/block";
-import { ArCacheInterface } from "../faces/utils/arCache";
+import Api from './api';
+import { Tag } from './tag';
+import 'arconnect';
+import { Network } from './network';
+import { BlockInterface } from '../faces/lib/block';
+import { ArCacheInterface } from '../faces/utils/arCache';
 
 export default class Blocks {
   private api: Api;
@@ -25,9 +25,7 @@ export default class Blocks {
       return block;
     }
 
-    const response = await this.api.get(
-      `block/hash/${indepHash}`
-    );
+    const response = await this.api.get(`block/hash/${indepHash}`);
 
     if (response.status === 200) {
       block = response.data;

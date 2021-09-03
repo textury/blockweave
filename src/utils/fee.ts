@@ -1,8 +1,14 @@
-import { SmartWeaveNodeFactory, LoggerFactory } from "redstone-smartweave";
-import Arpi from "../arpi";
+import { SmartWeaveNodeFactory, LoggerFactory } from 'redstone-smartweave';
+import Arpi from '../arpi';
 
 export default async function selectWeightedHolder(arpi: Arpi): Promise<string> {
-  const { balances, vault }: { balances: { [key: string]: number }, vault: { [key: string]: [{ balance: number, start: number, end: number }] } } = await getState(arpi);
+  const {
+    balances,
+    vault,
+  }: {
+    balances: { [key: string]: number };
+    vault: { [key: string]: [{ balance: number; start: number; end: number }] };
+  } = await getState(arpi);
 
   let totalTokens = 0;
   for (const addy of Object.keys(balances)) {
@@ -36,10 +42,15 @@ export default async function selectWeightedHolder(arpi: Arpi): Promise<string> 
   return;
 }
 
-async function getState(arpi: Arpi): Promise<{ balances: { [key: string]: number }, vault: { [key: string]: [{ balance: number, start: number, end: number }] } }> {
-  const cxyzContractTxId = "mzvUgNc8YFk0w5K5H7c8pyT-FC5Y_ba0r7_8766Kx74";
+async function getState(
+  arpi: Arpi,
+): Promise<{
+  balances: { [key: string]: number };
+  vault: { [key: string]: [{ balance: number; start: number; end: number }] };
+}> {
+  const cxyzContractTxId = 'mzvUgNc8YFk0w5K5H7c8pyT-FC5Y_ba0r7_8766Kx74';
 
-  LoggerFactory.INST.logLevel("fatal");
+  LoggerFactory.INST.logLevel('fatal');
 
   // @ts-ignore
   const smartweave = SmartWeaveNodeFactory.memCached(arpi);

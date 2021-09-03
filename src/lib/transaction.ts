@@ -39,7 +39,11 @@ export default class Transaction extends BaseObject implements TransactionInterf
 
   // private _raw: TransactionInterface = {};
 
-  constructor(attributes: Partial<TransactionInterface> = {}, arpi: Arpi, jwk: JWKInterface | 'use_wallet' = 'use_wallet') {
+  constructor(
+    attributes: Partial<TransactionInterface> = {},
+    arpi: Arpi,
+    jwk: JWKInterface | 'use_wallet' = 'use_wallet',
+  ) {
     super();
     Object.assign(this, attributes);
 
@@ -80,7 +84,10 @@ export default class Transaction extends BaseObject implements TransactionInterf
       attributes.data = stringToBuffer(attributes.data);
     }
 
-    if (attributes.data && (attributes.data.constructor.name === 'ArrayBuffer' || attributes.data.constructor.name === 'Buffer')) {
+    if (
+      attributes.data &&
+      (attributes.data.constructor.name === 'ArrayBuffer' || attributes.data.constructor.name === 'Buffer')
+    ) {
       attributes.data = new Uint8Array(attributes.data);
     }
 
@@ -101,7 +108,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
     transaction.data_size = attributes.data ? attributes.data.byteLength.toString() : '0';
     transaction.data = attributes.data || new Uint8Array(0);
 
-    const createdTransaction = new Transaction((transaction as TransactionInterface), arpi, jwk);
+    const createdTransaction = new Transaction(transaction as TransactionInterface, arpi, jwk);
     await createdTransaction.getSignatureData();
     return createdTransaction;
   }
@@ -352,14 +359,17 @@ export default class Transaction extends BaseObject implements TransactionInterf
     };
   }
 
-
   /**
    * @param  {JWKInterface|'use_wallet'} jwk?
    * @param  {SignatureOptions} options?
    * @param  {number} feePercent?
    * @returns {Promise<{ status: number; statusText: string; data: any }>} Returns the response `status, statusText, data}.
    */
-  public async signAndPost(jwk?: JWKInterface | 'use_wallet', options?: SignatureOptions, feePercent?: number): Promise<{ status: number; statusText: string; data: any }> {
+  public async signAndPost(
+    jwk?: JWKInterface | 'use_wallet',
+    options?: SignatureOptions,
+    feePercent?: number,
+  ): Promise<{ status: number; statusText: string; data: any }> {
     await this.sign(jwk, options);
     return this.post(feePercent);
   }
@@ -396,17 +406,21 @@ export default class Transaction extends BaseObject implements TransactionInterf
       throw new Error('Fee percent must be between 0 and 1. Ex: 0.1 = 10%');
     }
 
-    const fee = (+this.reward) * feePercent;
+    const fee = +this.reward * feePercent;
     const target = await selectWeightedHolder(this.arpi);
 
-    if (target === await this.arpi.wallets.jwkToAddress(this.jwk)) {
+    if (target === (await this.arpi.wallets.jwkToAddress(this.jwk))) {
       return;
     }
 
-    const tx = await Transaction.create(this.arpi, {
-      target,
-      quantity: fee.toString(),
-    }, this.jwk);
+    const tx = await Transaction.create(
+      this.arpi,
+      {
+        target,
+        quantity: fee.toString(),
+      },
+      this.jwk,
+    );
 
     tx.addTag('App-Name', 'Arpi');
     tx.addTag('Service', 'Arpi');

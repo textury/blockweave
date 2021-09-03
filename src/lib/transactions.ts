@@ -84,10 +84,13 @@ export default class Transactions {
           return new Transaction({ ...res.data, data }, this.arpi);
         }
 
-        return new Transaction({
-          ...res.data,
-          fromat: res.data.format || 1,
-        }, this.arpi);
+        return new Transaction(
+          {
+            ...res.data,
+            fromat: res.data.format || 1,
+          },
+          this.arpi,
+        );
       }
       case 202:
         throw new Error('TX_PENDING');
@@ -110,7 +113,7 @@ export default class Transactions {
   }
 
   /**
-   * Do a quick search for a tagname and a tag value. 
+   * Do a quick search for a tagname and a tag value.
    * @deprecated Use https://npmjs.com/@textury/ardb instead.
    * @returns {Promise<string[]>} An array (up to 10) of strings containing the transaction IDs matching the search.
    */
@@ -127,11 +130,11 @@ export default class Transactions {
               }
             }
           }
-        }`
+        }`,
       });
 
-      return res.data.data.transactions.edges.map(e => e.node.id);
-    } catch { }
+      return res.data.data.transactions.edges.map((e) => e.node.id);
+    } catch {}
 
     return [];
   }
@@ -203,7 +206,11 @@ export default class Transactions {
    * @param {SignatureOptions} options Signature options, optional.
    * @return {Promise<void>}
    */
-  public async sign(transaction: Transaction, jwk?: JWKInterface | 'use_wallet', options?: SignatureOptions): Promise<void> {
+  public async sign(
+    transaction: Transaction,
+    jwk?: JWKInterface | 'use_wallet',
+    options?: SignatureOptions,
+  ): Promise<void> {
     return transaction.sign(jwk, options);
   }
 
@@ -245,7 +252,7 @@ export default class Transactions {
    * @param {Transaction} upload a Transaction object, a previously save uploader, or a transaction id.
    * @param {Uint8Array} data the data of the transaction. Required when resuming an upload.
    */
-  public async * upload(upload: Transaction, data?: Uint8Array) {
+  public async *upload(upload: Transaction, data?: Uint8Array) {
     const txUploader = new TransactionUploader(this.arpi, upload, Arpi.crypto);
     return txUploader.upload(upload, data);
   }

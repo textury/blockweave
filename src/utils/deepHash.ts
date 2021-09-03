@@ -13,10 +13,7 @@ const deepHash = async (data: DeepHashChunk): Promise<Uint8Array> => {
 
   tag = concatBuffers([stringToBuffer('blob'), stringToBuffer(data.byteLength.toString())]);
 
-  const taggedHash = concatBuffers([
-    await Arpi.crypto.hash(tag, 'SHA-384'),
-    await Arpi.crypto.hash(data, 'SHA-384'),
-  ]);
+  const taggedHash = concatBuffers([await Arpi.crypto.hash(tag, 'SHA-384'), await Arpi.crypto.hash(data, 'SHA-384')]);
 
   return await Arpi.crypto.hash(taggedHash, 'SHA-384');
 };

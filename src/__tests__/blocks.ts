@@ -23,8 +23,7 @@ describe('Blocks', () => {
   test("Get block's data by its indep_hash", async () => {
     // given
     // https://arweave.net/block/hash/zbUPQFA4ybnd8h99KI9Iqh4mogXJibr0syEwuJPrFHhOhld7XBMOUDeXfsIGvYDp
-    const blockIndepHash =
-      "zbUPQFA4ybnd8h99KI9Iqh4mogXJibr0syEwuJPrFHhOhld7XBMOUDeXfsIGvYDp";
+    const blockIndepHash = 'zbUPQFA4ybnd8h99KI9Iqh4mogXJibr0syEwuJPrFHhOhld7XBMOUDeXfsIGvYDp';
     const expectedResult = require(`./fixtures/block_${blockIndepHash}.json`);
 
     // when

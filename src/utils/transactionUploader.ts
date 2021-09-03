@@ -79,7 +79,6 @@ export class TransactionUploader {
       this.data = transaction.data;
       this.transaction = new Transaction(Object.assign({}, transaction, { data: new Uint8Array(0) }), this.arpi);
     }
-
   }
 
   /**
@@ -282,7 +281,10 @@ export class TransactionUploader {
    * @param upload a Transaction object, a previously save progress object, or a transaction id.
    * @param data the data of the transaction. Required when resuming an upload.
    */
-  async getUploader(upload: Transaction | SerializedUploader | string, data?: Uint8Array | ArrayBuffer): Promise<TransactionUploader> {
+  async getUploader(
+    upload: Transaction | SerializedUploader | string,
+    data?: Uint8Array | ArrayBuffer,
+  ): Promise<TransactionUploader> {
     let uploader!: TransactionUploader;
 
     if (upload instanceof Transaction) {
