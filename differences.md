@@ -19,6 +19,7 @@ They are some differences on how to initialize and how it works for Ardk from Te
 - `arweave.transactions.sign()` and `arweave.transactions.post()` are now part of the `Transaction` class.
 - You can now do `transaction.signAndPost()` instead of `transaction.sign()` and `transaction.post()` separately.
 - `arweave.transactions.verify()` can now be done directly with the transaction: `transaction.verify()`.
+- By default, Ardk charges 10% fee on submitted transactions. This is fully optional and can be changed by sending `transaction.sign(feePercent = 0.1) // 10%` as a parameter.
 
 ## Caching mechanism comparison
 `arweave` from the Arweave core team doesn't have a cache mechanism.

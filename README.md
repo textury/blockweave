@@ -2,6 +2,8 @@
 
 Ardk is the JavaScript/TypeScript SDK for interacting with the Arweave network and uploading data to the permaweb. It works in latest browsers and Node JS.
 
+Coming from [Arweave JS](https://github.com/ArweaveTeam/arweave-js/)? See some key [differences](differences.md).
+
 - [Ardk](#ardk)
   - [Installation](#installation)
     - [NPM](#npm)
@@ -23,6 +25,7 @@ Ardk is the JavaScript/TypeScript SDK for interacting with the Arweave network a
       - [Sign a transaction](#sign-a-transaction)
       - [Submit a transaction](#submit-a-transaction)
         - [Chunked uploading advanced options](#chunked-uploading-advanced-options)
+        - [Fees](#fees)
       - [Get a transaction status](#get-a-transaction-status)
       - [Get a transaction](#get-a-transaction)
       - [Get transaction data](#get-transaction-data)
@@ -372,6 +375,16 @@ for await (const uploader of ardk.transactions.upload(tx)) {
   console.log(`${uploader.pctComplete}% Complete`);
 }
 // done.
+```
+
+##### Fees
+By default Ardk charges a 10% fee on every submitted transaction. This is fully optional and can be changed in two ways:
+```js
+// From post()
+await transaction.post(feePercent = 0.1);
+
+// From singAndPost()
+await transaction.signAndPost(jwk, null, feePercent = 0.1);
 ```
 
 #### Get a transaction status
