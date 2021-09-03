@@ -47,6 +47,7 @@ export default class Arpi {
     this.ar = new Ar();
     this.chunks = new Chunks(this.api);
     this.transactions = new Transactions(this, this.chunks, this.cache);
+    this.blocks = new Blocks(this.api, this.network, this.cache);
   }
 
   public async createTransaction(
