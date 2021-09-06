@@ -1,12 +1,12 @@
-import Solid from '../solid';
+import Ardk from '../ardk';
 
 jest.setTimeout(10000);
 
 describe('Blocks', () => {
-  let solid: Solid;
+  let ardk: Ardk;
 
   beforeAll(() => {
-    solid = new Solid({ url: 'https://arweave.net' });
+    ardk = new Ardk({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe('Blocks', () => {
     const expectedResult = require(`./fixtures/block_${blockIndepHash}.json`);
 
     // when
-    const result = (await solid.blocks.get(blockIndepHash)) as any; // note: any to be able to access object values by keys.
+    const result = (await ardk.blocks.get(blockIndepHash)) as any; // note: any to be able to access object values by keys.
 
     // then
     expect(expectedResult).toStrictEqual(result);
@@ -35,10 +35,10 @@ describe('Blocks', () => {
 
   test("Get current block's data", async () => {
     // given
-    const { current } = await solid.network.getInfo();
+    const { current } = await ardk.network.getInfo();
 
     // when
-    const result = await solid.blocks.getCurrent();
+    const result = await ardk.blocks.getCurrent();
 
     // then
     expect(result.indep_hash).toBe(current);

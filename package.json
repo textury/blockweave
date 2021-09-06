@@ -1,16 +1,16 @@
 {
-  "name": "@textury/solid",
+  "name": "ardk",
   "version": "1.0.0",
-  "main": "dist/solid.js",
-  "repository": "https://github.com/textury/solid.git",
+  "main": "lib/ardk.js",
+  "repository": "https://github.com/textury/ardk.git",
   "author": "Cedrik <cedrik.git@tryninja.io>",
   "license": "MIT",
   "files": [
-    "dist/**/*"
+    "lib/**/*"
   ],
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "npm run prebuild && tsc",
+    "prebuild": "rimraf lib",
+    "build": "tsc && ts-node build.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "npm run test:node && npm run test:web",
     "test:node": "jest",
@@ -27,21 +27,26 @@
     "arconnect": "^0.2.9",
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
-    "redstone-smartweave": "^0.3.7-alpha.1"
+    "redstone-smartweave": "^0.3.8-alpha.1",
+    "util": "^0.12.4"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "@types/node": "^15.12.2",
-    "jest": "^27.0.4",
+    "@swc/cli": "^0.1.49",
+    "@swc/core": "^1.2.84",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.10",
+    "browserslist": "^4.16.8",
+    "esbuild": "^0.12.25",
+    "jest": "^27.1.0",
     "jest-config": "^27.1.0",
-    "prettier": "^2.3.1",
+    "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
-    "ts-jest": "^27.0.3",
-    "ts-node": "^10.0.0",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1",
     "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
-    "typedoc": "^0.20.36",
-    "typedoc-plugin-markdown": "^3.9.0",
-    "typescript": "^4.3.2"
+    "typedoc": "^0.21.9",
+    "typedoc-plugin-markdown": "^3.10.4",
+    "typescript": "^4.4.2"
   }
 }

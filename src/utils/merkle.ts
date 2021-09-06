@@ -1,8 +1,8 @@
 /**
- * @see {@link https://github.com/SolidTeam/arweave/blob/fbc381e0e36efffa45d13f2faa6199d3766edaa2/apps/arweave/src/ar_merkle.erl}
+ * @see {@link https://github.com/ArdkTeam/arweave/blob/fbc381e0e36efffa45d13f2faa6199d3766edaa2/apps/arweave/src/ar_merkle.erl}
  */
 
-import Solid from '../solid';
+import Ardk from '../ardk';
 import { Chunk, MerkleNode, LeafNode, Proof } from '../faces/utils/merkle';
 import { concatBuffers } from './buffer';
 
@@ -57,7 +57,7 @@ export default class Merkle {
       }
 
       const chunk = rest.slice(0, chunkSize);
-      const dataHash = await Solid.crypto.hash(chunk);
+      const dataHash = await Ardk.crypto.hash(chunk);
       cursor += chunk.byteLength;
       chunks.push({
         dataHash,
@@ -68,7 +68,7 @@ export default class Merkle {
     }
 
     chunks.push({
-      dataHash: await Solid.crypto.hash(rest),
+      dataHash: await Ardk.crypto.hash(rest),
       minByteRange: cursor,
       maxByteRange: cursor + rest.byteLength,
     });
@@ -237,7 +237,7 @@ export default class Merkle {
       data = concatBuffers(data);
     }
 
-    return new Uint8Array(await Solid.crypto.hash(data));
+    return new Uint8Array(await Ardk.crypto.hash(data));
   }
 
   private resolveBranchProofs(node: MerkleNode, proof: Uint8Array = new Uint8Array(), depth = 0): Proof | Proof[] {
