@@ -60,7 +60,7 @@ export default class Ardk {
   public getConfig() {
     return {
       api: this.api.config,
-    }
+    };
   }
 
   public async createTransaction(
