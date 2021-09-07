@@ -10,6 +10,14 @@ export default class Api {
     return this._config;
   }
 
+  /**
+   * @deprecated Use `api.config` instead
+   * @returns {ApiConfigInterface} - The API configuration.
+   */
+  public getConfig(): ApiConfigInterface {
+    return this._config;
+  }
+
   constructor(config: ApiConfigInterface = {}, trustedHosts?: string[]) {
     this._config = this.mergeDefaults(config);
     this.trustedHosts = trustedHosts || this.trustedHosts;
