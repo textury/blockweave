@@ -1,15 +1,15 @@
 {
   "name": "ardk",
   "version": "1.0.1",
-  "main": "lib/ardk.js",
+  "main": "dist/ardk.js",
   "repository": "https://github.com/textury/ardk.git",
   "author": "Cedrik <cedrik.git@tryninja.io>",
   "license": "MIT",
   "files": [
-    "lib/**/*"
+    "dist/**/*"
   ],
   "scripts": {
-    "prebuild": "rimraf lib",
+    "prebuild": "rimraf dist",
     "build": "tsc && ts-node build.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "npm run test:node && npm run test:web",
@@ -27,7 +27,7 @@
     "arconnect": "^0.2.9",
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
-    "redstone-smartweave": "^0.3.8-alpha.1",
+    "redstone-smartweave": "^0.3.10-alpha.1",
     "util": "^0.12.4"
   },
   "devDependencies": {
@@ -37,6 +37,7 @@
     "@types/node": "^16.7.10",
     "browserslist": "^4.16.8",
     "esbuild": "^0.12.25",
+    "esbuild-node-builtins": "^0.1.0",
     "jest": "^27.1.0",
     "jest-config": "^27.1.0",
     "prettier": "^2.3.2",

@@ -69,6 +69,10 @@ export default class Ardk {
   }
 }
 
+if (window) {
+  window.Ardk = Ardk;
+}
+
 declare global {
   interface Window {
     Ardk: typeof Ardk;

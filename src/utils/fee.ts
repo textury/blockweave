@@ -1,4 +1,4 @@
-import { SmartWeaveNodeFactory, LoggerFactory } from 'redstone-smartweave';
+import { SmartWeaveWebFactory } from 'redstone-smartweave';
 import Ardk from '../ardk';
 
 export default async function selectWeightedHolder(ardk: Ardk): Promise<string> {
@@ -48,10 +48,8 @@ async function getState(ardk: Ardk): Promise<{
 }> {
   const cxyzContractTxId = 'mzvUgNc8YFk0w5K5H7c8pyT-FC5Y_ba0r7_8766Kx74';
 
-  LoggerFactory.INST.logLevel('fatal');
-
   // @ts-ignore
-  const smartweave = SmartWeaveNodeFactory.memCached(ardk);
+  const smartweave = SmartWeaveWebFactory.memCached(ardk);
 
   // connecting to a given contract
   const cxyzContract = smartweave.contract(cxyzContractTxId);

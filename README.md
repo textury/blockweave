@@ -51,16 +51,16 @@ Single bundle file (web only - use the NPM method if using Node).
 
 ```html
 <!-- Latest -->
-<script src="https://unpkg.com/ardk/dist/ardk.js"></script>
+<script src="https://unpkg.com/ardk/dist/ardk-web.js"></script>
 
 <!-- Latest, minified-->
-<script src="https://unpkg.com/ardk/bundles/web.bundle.min.js"></script>
+<script src="https://unpkg.com/ardk/dist/ardk-web.min.js"></script>
 
 <!-- Specific version -->
-<script src="https://unpkg.com/ardk@1.0.0/dist/ardk.js"></script>
+<script src="https://unpkg.com/ardk@1.0.0/dist/ardk-web.js"></script>
 
 <!-- Specific version, minified -->
-<script src="https://unpkg.com/ardk@1.0.0/dist/ardk.min.js"></script>
+<script src="https://unpkg.com/ardk@1.0.0/dist/ardk-web.min.js"></script>
 ```
 
 
@@ -84,7 +84,7 @@ const ardk = new Ardk();
 <head>
     <meta charset="UTF-8">
     <title>Hello world</title>
-    <script src="https://unpkg.com/ardk/dist/ardk.js"></script>
+    <script src="https://unpkg.com/ardk/dist/ardk-web.js"></script>
     <script>
     const ardk = new Ardk();
     ardk.network.getInfo().then(console.log);

@@ -1,20 +1,25 @@
-const { build } = require('esbuild');
+import { build } from 'esbuild';
+import { nodeBuiltIns } from 'esbuild-node-builtins';
 
 const runBuild = async () => {
   // Build to browser js
   build({
-    external: ['fs', 'path', 'os', 'crypto'],
+    plugins: [nodeBuiltIns()],
     entryPoints: ['./src/ardk.ts'],
     minify: false,
     bundle: true,
     platform: 'browser',
     target: ['es2019'],
-    outfile: './lib/ardk-web.js',
+    outfile: './dist/ardk-web.js',
     sourcemap: 'external',
     define: {
-      'process.env.NODE_DEBUG': false,
+      'process.env.NODE_DEBUG': 'false',
       'process.env.NODE_ENV': 'production',
-      'process.env.DEBUG': false,
+      'process.env.DEBUG': 'false',
+      'global': 'window',
+      'process.cwd': 'String',
+      '_smartweave_1.LoggerFactory.INST': '{"create": "function() {}"}',
+      '__filename': 'String',
     }
   }).catch((e) => {
     console.log(e);
@@ -23,18 +28,22 @@ const runBuild = async () => {
 
   // Minified version
   build({
-    external: ['fs', 'path', 'os', 'crypto'],
+    plugins: [nodeBuiltIns()],
     entryPoints: ['./src/ardk.ts'],
     minify: true,
     bundle: true,
     platform: 'browser',
     target: ['es2019'],
-    outfile: './lib/ardk-web.min.js',
+    outfile: './dist/ardk-web.min.js',
     sourcemap: 'external',
     define: {
-      'process.env.NODE_DEBUG': false,
+      'process.env.NODE_DEBUG': 'false',
       'process.env.NODE_ENV': 'production',
-      'process.env.DEBUG': false,
+      'process.env.DEBUG': 'false',
+      'global': 'window',
+      'process.cwd': 'String',
+      '_smartweave_1.LoggerFactory.INST': '{"create": "function() {}"}',
+      '__filename': 'String',
     }
   }).catch((e) => {
     console.log(e);

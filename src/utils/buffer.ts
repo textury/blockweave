@@ -1,4 +1,5 @@
 import { toByteArray, fromByteArray } from './b64';
+import util from 'util';
 
 export type Base64UrlString = string;
 
@@ -28,8 +29,7 @@ export function b64UrlToString(b64UrlString: string): string {
 
   // TextEncoder will be available in browsers, but not in node
   if (typeof TextDecoder === 'undefined') {
-    const TextDecoder = require('util').TextDecoder;
-    return new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+    return new util.TextDecoder('utf-8', { fatal: true }).decode(buffer);
   }
 
   return new TextDecoder('utf-8', { fatal: true }).decode(buffer);
@@ -38,8 +38,7 @@ export function b64UrlToString(b64UrlString: string): string {
 export function bufferToString(buffer: Uint8Array | ArrayBuffer): string {
   // TextEncoder will be available in browsers, but not in node
   if (typeof TextDecoder === 'undefined') {
-    const TextDecoder = require('util').TextDecoder;
-    return new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+    return new util.TextDecoder('utf-8', { fatal: true }).decode(buffer);
   }
 
   return new TextDecoder('utf-8', { fatal: true }).decode(buffer);
@@ -48,8 +47,7 @@ export function bufferToString(buffer: Uint8Array | ArrayBuffer): string {
 export function stringToBuffer(str: string): Uint8Array {
   // TextEncoder will be available in browsers, but not in node
   if (typeof TextEncoder === 'undefined') {
-    const TextEncoder = require('util').TextEncoder;
-    return new TextEncoder().encode(str);
+    return new util.TextEncoder().encode(str);
   }
   return new TextEncoder().encode(str);
 }
