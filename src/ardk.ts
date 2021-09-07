@@ -50,6 +50,19 @@ export default class Ardk {
     this.blocks = new Blocks(this.api, this.network, this.cache);
   }
 
+  public get config(): ApiConfigInterface {
+    return this.api.config;
+  }
+
+  /**
+   * @deprecated Use arkb.config instead.
+   */
+  public getConfig() {
+    return {
+      api: this.api.config,
+    }
+  }
+
   public async createTransaction(
     attributes: Partial<CreateTransactionInterface>,
     jwk?: JWKInterface | 'use_wallet',
