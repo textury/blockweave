@@ -69,7 +69,7 @@ export default class Ardk {
   }
 }
 
-if (window) {
+if (typeof window !== 'undefined') {
   window.Ardk = Ardk;
 }
 
