@@ -25,17 +25,17 @@
   },
   "dependencies": {
     "arconnect": "^0.2.9",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "bignumber.js": "^9.0.1",
-    "redstone-smartweave": "^0.3.10-alpha.1",
+    "redstone-smartweave": "^0.3.10-alpha.3",
     "util": "^0.12.4"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.49",
     "@swc/core": "^1.2.84",
     "@types/jest": "^27.0.1",
-    "@types/node": "^16.7.10",
-    "browserslist": "^4.16.8",
+    "@types/node": "^16.7.13",
+    "browserslist": "^4.17.0",
     "esbuild": "^0.12.25",
     "esbuild-node-builtins": "^0.1.0",
     "jest": "^27.1.0",
