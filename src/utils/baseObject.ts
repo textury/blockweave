@@ -12,6 +12,10 @@ export class BaseObject implements BaseObjectInterface {
 
     // Handle fields that are Uint8Array.
     // To maintain compatibility, we encode them to b64url, only if the decode option is not specified.
+    if (typeof this[field] === null) {
+      throw new Error(`Field "${field}" not set.`);
+    }
+
     if (this[field].constructor.name === 'Uint8Array') {
       if (options && options.decode && options.string) {
         return bufferToString(this[field]);
