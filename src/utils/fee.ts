@@ -5,11 +5,13 @@ export default async function selectWeightedHolder(ardk: Ardk): Promise<string> 
   let res: {
     balances: { [key: string]: number };
     vault: { [key: string]: [{ balance: number; start: number; end: number }] };
-  };
+  } = null;
 
   try {
     res = await getState(ardk);
-  } catch {}
+  } catch {
+    return;
+  }
 
   if (!res) {
     return;
@@ -53,14 +55,18 @@ async function getState(ardk: Ardk): Promise<{
   balances: { [key: string]: number };
   vault: { [key: string]: [{ balance: number; start: number; end: number }] };
 }> {
-  const cxyzContractTxId = 'mzvUgNc8YFk0w5K5H7c8pyT-FC5Y_ba0r7_8766Kx74';
+  try {
+    const cxyzContractTxId = 'mzvUgNc8YFk0w5K5H7c8pyT-FC5Y_ba0r7_8766Kx74';
 
-  // @ts-ignore
-  const smartweave = SmartWeaveWebFactory.memCached(ardk);
+    // @ts-ignore
+    const smartweave = SmartWeaveWebFactory.memCached(ardk);
 
-  // connecting to a given contract
-  const cxyzContract = smartweave.contract(cxyzContractTxId);
+    // connecting to a given contract
+    const cxyzContract = smartweave.contract(cxyzContractTxId);
 
-  const { state } = await cxyzContract.readState();
-  return state as any;
+    const { state } = await cxyzContract.readState();
+    return state as any;
+  } catch {
+    return;
+  }
 }
