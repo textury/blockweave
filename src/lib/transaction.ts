@@ -45,6 +45,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
     jwk: JWKInterface | 'use_wallet' = 'use_wallet',
   ) {
     super();
+
     Object.assign(this, attributes);
 
     // If something passes in a Tx that has been toJSON'ed and back,
