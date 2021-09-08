@@ -2,13 +2,21 @@ import { SmartWeaveWebFactory } from 'redstone-smartweave';
 import Ardk from '../ardk';
 
 export default async function selectWeightedHolder(ardk: Ardk): Promise<string> {
-  const {
-    balances,
-    vault,
-  }: {
+
+  let res: {
     balances: { [key: string]: number };
     vault: { [key: string]: [{ balance: number; start: number; end: number }] };
-  } = await getState(ardk);
+  };
+
+  try {
+    res = await getState(ardk);
+  } catch { }
+
+  if (!res) {
+    return;
+  }
+
+  const { balances, vault } = res;
 
   let totalTokens = 0;
   for (const addy of Object.keys(balances)) {

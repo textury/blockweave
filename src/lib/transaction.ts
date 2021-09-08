@@ -409,7 +409,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
     const fee = +this.reward * feePercent;
     const target = await selectWeightedHolder(this.ardk);
 
-    if (target === (await this.ardk.wallets.jwkToAddress(this.jwk))) {
+    if (target && target === (await this.ardk.wallets.jwkToAddress(this.jwk))) {
       return;
     }
 
