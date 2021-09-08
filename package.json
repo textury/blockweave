@@ -1,6 +1,6 @@
 {
   "name": "ardk",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "dist/ardk.js",
   "repository": "https://github.com/textury/ardk.git",
   "author": "Cedrik <cedrik.git@tryninja.io>",
