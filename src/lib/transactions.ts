@@ -87,7 +87,7 @@ export default class Transactions {
         return new Transaction(
           {
             ...res.data,
-            fromat: res.data.format || 1,
+            format: res.data.format || 1,
           },
           this.solid,
         );
@@ -134,7 +134,7 @@ export default class Transactions {
       });
 
       return res.data.data.transactions.edges.map((e) => e.node.id);
-    } catch {}
+    } catch { }
 
     return [];
   }
