@@ -9,15 +9,15 @@ import 'arconnect';
 import { SerializedUploader } from '../faces/utils/transactionUploader';
 import { TransactionUploader } from '../utils/transactionUploader';
 import { ArCacheInterface } from '../faces/utils/arCache';
-import Ardk from '../ardk';
+import Blockweave from '../blockweave';
 import ArCache from '../utils/arCache';
 
 export default class Transactions {
-  private solid: Ardk;
+  private solid: Blockweave;
   private chunks: Chunks;
   private cache: ArCacheInterface;
 
-  constructor(solid: Ardk, chunks: Chunks, cache: ArCache) {
+  constructor(solid: Blockweave, chunks: Chunks, cache: ArCache) {
     this.chunks = chunks;
     this.cache = cache;
     this.solid = solid;
@@ -134,7 +134,7 @@ export default class Transactions {
       });
 
       return res.data.data.transactions.edges.map((e) => e.node.id);
-    } catch {}
+    } catch { }
 
     return [];
   }
@@ -200,7 +200,7 @@ export default class Transactions {
   }
 
   /**
-   * Sign a transaction with your wallet, to be able to post it to Ardk.
+   * Sign a transaction with your wallet, to be able to post it to Blockweave.
    * @param {Transaction} transaction The transaction to sign.
    * @param {JWKInterface} jwk A JWK (Wallet address JSON representation) to sign the transaction with. Or 'use_wallet' to use the wallet from an external tool.
    * @param {SignatureOptions} options Signature options, optional.
@@ -243,7 +243,7 @@ export default class Transactions {
    * @param data the data of the transaction. Required when resuming an upload.
    */
   public async getUploader(upload: Transaction | SerializedUploader | string, data?: Uint8Array | ArrayBuffer) {
-    const txUploader = new TransactionUploader(this.solid, upload, Ardk.crypto);
+    const txUploader = new TransactionUploader(this.solid, upload, Blockweave.crypto);
     return txUploader.getUploader(upload, data);
   }
 
@@ -253,7 +253,7 @@ export default class Transactions {
    * @param {Uint8Array} data the data of the transaction. Required when resuming an upload.
    */
   public async *upload(upload: Transaction, data?: Uint8Array) {
-    const txUploader = new TransactionUploader(this.solid, upload, Ardk.crypto);
+    const txUploader = new TransactionUploader(this.solid, upload, Blockweave.crypto);
     return txUploader.upload(upload, data);
   }
 }

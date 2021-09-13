@@ -1,11 +1,11 @@
-import Ardk from '../ardk';
+import Blockweave from '../blockweave';
 import { NetworkInfoInterface, PeerList } from '../faces/lib/network';
 
 describe('NETWORK', () => {
-  let ardk: Ardk;
+  let blockweave: Blockweave;
 
   beforeAll(() => {
-    ardk = new Ardk({ url: 'https://arweave.net' });
+    blockweave = new Blockweave({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('NETWORK', () => {
   });
 
   test('getInfo', async () => {
-    const info: NetworkInfoInterface = await ardk.network.getInfo();
+    const info: NetworkInfoInterface = await blockweave.network.getInfo();
 
     expect(info).toBeInstanceOf(Object);
     expect(typeof info.network).toBe('string');
@@ -35,7 +35,7 @@ describe('NETWORK', () => {
   });
 
   test('getPeers', async () => {
-    const peers: PeerList = await ardk.network.getPeers();
+    const peers: PeerList = await blockweave.network.getPeers();
 
     expect(peers.length).toBeGreaterThan(0);
     expect(typeof peers[0]).toBe('string');

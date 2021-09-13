@@ -52,7 +52,7 @@ export default class Wallets {
   }
 
   /**
-   * Generate a new Ardk wallet JSON object (JWK).
+   * Generate a new Blockweave wallet JSON object (JWK).
    * @returns Promise which resolves in the JWK.
    */
   public async generate(): Promise<JWKInterface> {

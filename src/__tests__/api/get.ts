@@ -1,11 +1,11 @@
 import axios from 'axios';
-import Ardk from '../../ardk';
+import Blockweave from '../../blockweave';
 
 describe('API GET', () => {
-  let ardk: Ardk;
+  let blockweave: Blockweave;
 
   beforeAll(() => {
-    ardk = new Ardk({ url: 'https://arweave.net' });
+    blockweave = new Blockweave({ url: 'https://arweave.net' });
   });
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('API GET', () => {
   });
 
   test('/info', async () => {
-    const res = await ardk.api.get('/info');
+    const res = await blockweave.api.get('/info');
 
     expect(res.status).toBe(200);
     expect(res.data).toEqual({
@@ -37,7 +37,7 @@ describe('API GET', () => {
   });
 
   test('info', async () => {
-    const res = await ardk.api.get('info');
+    const res = await blockweave.api.get('info');
 
     expect(res.status).toBe(200);
     expect(res.data).toEqual({
@@ -54,7 +54,7 @@ describe('API GET', () => {
   });
 
   test('info on invalid gateway, should be replaced to an active one', async () => {
-    const inst = new Ardk({ url: 'https://hasdfhahsdflkajsdf.com' });
+    const inst = new Blockweave({ url: 'https://hasdfhahsdflkajsdf.com' });
     const res = await inst.api.get('info');
 
     expect(inst.api.config.host).not.toBe('hasdfhahsdflkajsdf.com');
@@ -73,7 +73,7 @@ describe('API GET', () => {
   });
 
   test("info on invalid gateway with invalid trusted hosts, shouldn't be replaced", async () => {
-    const inst = new Ardk({ url: 'https://hasdfhahsdflkajsdf.com' }, ['https://hasdhfhasdf.com']);
+    const inst = new Blockweave({ url: 'https://hasdfhahsdflkajsdf.com' }, ['https://hasdhfhasdf.com']);
     jest.spyOn(axios, 'get').mockRejectedValue(new Error('error'));
 
     await expect(inst.api.get('info')).rejects.toThrow();
@@ -81,7 +81,7 @@ describe('API GET', () => {
   });
 
   test("info on invalid localhost, shouldn't be replaced", async () => {
-    const inst = new Ardk({ url: 'https://localhost:9876' });
+    const inst = new Blockweave({ url: 'https://localhost:9876' });
     jest.spyOn(axios, 'get').mockRejectedValue(new Error('error'));
 
     await expect(inst.api.get('info')).rejects.toThrow();

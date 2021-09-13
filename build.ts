@@ -5,12 +5,12 @@ const runBuild = async () => {
   // Build to browser js
   build({
     plugins: [nodeBuiltIns()],
-    entryPoints: ['./src/ardk.ts'],
+    entryPoints: ['./src/blockweave.ts'],
     minify: false,
     bundle: true,
     platform: 'browser',
     target: ['es2019'],
-    outfile: './dist/ardk-web.js',
+    outfile: './dist/blockweave-web.js',
     sourcemap: 'external',
     define: {
       'process.env.NODE_DEBUG': 'false',
@@ -29,12 +29,12 @@ const runBuild = async () => {
   // Minified version
   build({
     plugins: [nodeBuiltIns()],
-    entryPoints: ['./src/ardk.ts'],
+    entryPoints: ['./src/blockweave.ts'],
     minify: true,
     bundle: true,
     platform: 'browser',
     target: ['es2019'],
-    outfile: './dist/ardk-web.min.js',
+    outfile: './dist/blockweave-web.min.js',
     sourcemap: 'external',
     define: {
       'process.env.NODE_DEBUG': 'false',

@@ -1,8 +1,8 @@
 {
-  "name": "ardk",
+  "name": "blockweave",
   "version": "1.0.10",
-  "main": "dist/ardk.js",
-  "repository": "https://github.com/textury/ardk.git",
+  "main": "dist/blockweave.js",
+  "repository": "https://github.com/textury/blockweave.git",
   "author": "Cedrik <cedrik.git@tryninja.io>",
   "license": "MIT",
   "files": [
