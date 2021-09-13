@@ -64,7 +64,11 @@ export default class Transaction extends BaseObject implements TransactionInterf
     this.merkle = new Merkle();
   }
 
-  static async create(blockweave: Blockweave, attributes: Partial<CreateTransactionInterface>, jwk: JWKInterface | 'use_wallet') {
+  static async create(
+    blockweave: Blockweave,
+    attributes: Partial<CreateTransactionInterface>,
+    jwk: JWKInterface | 'use_wallet',
+  ) {
     const transaction: Partial<CreateTransactionInterface> = {};
     Object.assign(transaction, attributes);
 

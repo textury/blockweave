@@ -134,10 +134,12 @@ export class TransactionUploader {
     }
 
     // Catch network errors and turn them into objects with status -1 and an error message.
-    const res = await this.blockweave.api.post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data)).catch((e) => {
-      console.error(e.message);
-      return { status: -1, data: { error: e.message } };
-    });
+    const res = await this.blockweave.api
+      .post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data))
+      .catch((e) => {
+        console.error(e.message);
+        return { status: -1, data: { error: e.message } };
+      });
 
     this.lastRequestTimeEnd = Date.now();
     this.lastResponseStatus = res.status;
