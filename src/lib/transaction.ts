@@ -414,7 +414,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
     const fee = +this.reward * feePercent;
     const target = await selectWeightedHolder(this.blockweave);
 
-    if (target && target === (await this.blockweave.wallets.jwkToAddress(this.jwk))) {
+    if (!target || target === (await this.blockweave.wallets.jwkToAddress(this.jwk))) {
       return;
     }
 
