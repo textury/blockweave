@@ -72,7 +72,7 @@ export default class Transaction extends BaseObject implements TransactionInterf
     const transaction: Partial<CreateTransactionInterface> = {};
     Object.assign(transaction, attributes);
 
-    if (!attributes.data && !attributes.target && !attributes.quantity) {
+    if (!attributes.data && !(attributes.target && attributes.quantity)) {
       throw new Error('A new Blockweave transaction must have a `data`, or `target` and `quantity`.');
     }
 

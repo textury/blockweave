@@ -5,13 +5,11 @@ export default async function selectWeightedHolder(blockweave: Blockweave): Prom
   let res: {
     balances: { [key: string]: number };
     vault: { [key: string]: [{ balance: number; start: number; end: number }] };
-  } = null;
+  };
 
   try {
     res = await getState(blockweave);
-  } catch {
-    return;
-  }
+  } catch { }
 
   if (!res) {
     return;
