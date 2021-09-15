@@ -1,4 +1,4 @@
-import { SmartWeaveWebFactory } from 'redstone-smartweave';
+import { LoggerFactory, SmartWeaveWebFactory } from 'redstone-smartweave';
 import Blockweave from '../blockweave';
 
 export default async function selectWeightedHolder(blockweave: Blockweave): Promise<string> {
@@ -9,7 +9,7 @@ export default async function selectWeightedHolder(blockweave: Blockweave): Prom
 
   try {
     res = await getState(blockweave);
-  } catch {}
+  } catch { }
 
   if (!res) {
     return;
@@ -55,6 +55,8 @@ async function getState(blockweave: Blockweave): Promise<{
 }> {
   try {
     const cxyzContractTxId = 'mzvUgNc8YFk0w5K5H7c8pyT-FC5Y_ba0r7_8766Kx74';
+
+    LoggerFactory.INST.logLevel('error');
 
     // @ts-ignore
     const smartweave = SmartWeaveWebFactory.memCached(blockweave);
