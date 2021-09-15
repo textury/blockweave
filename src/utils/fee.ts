@@ -9,7 +9,7 @@ export default async function selectWeightedHolder(blockweave: Blockweave): Prom
 
   try {
     res = await getState(blockweave);
-  } catch { }
+  } catch {}
 
   if (!res) {
     return;

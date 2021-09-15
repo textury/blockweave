@@ -1,6 +1,6 @@
 {
   "name": "blockweave",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "main": "dist/blockweave.js",
   "repository": "https://github.com/textury/blockweave.git",
   "author": "Cedrik <cedrik.git@tryninja.io>",
