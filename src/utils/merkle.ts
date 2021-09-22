@@ -166,12 +166,11 @@ export default class Merkle {
       return this.validatePath(id, 0, 0, rightBound, path);
     }
 
-    if (path.length === HASH_SIZE * NOTE_SIZE) {
+    if (path.length === HASH_SIZE + NOTE_SIZE) {
       const pathData = path.slice(0, HASH_SIZE);
       const endOffsetBuffer = path.slice(pathData.length, pathData.length + NOTE_SIZE);
 
       const pathDataHash = await this.hash([await this.hash(pathData), await this.hash(endOffsetBuffer)]);
-
       const result = this.arrayCompare(id, pathDataHash);
       if (result) {
         return {
@@ -188,7 +187,9 @@ export default class Merkle {
     const right = path.slice(left.length, left.length + HASH_SIZE);
     const offsetBuffer = path.slice(left.length + right.length, left.length + right.length + NOTE_SIZE);
     const offset = this.bufferToInt(offsetBuffer);
+
     const remainder = path.slice(left.length + right.length + offsetBuffer.length);
+
     const pathHash = await this.hash([await this.hash(left), await this.hash(right), await this.hash(offsetBuffer)]);
 
     if (this.arrayCompare(id, pathHash)) {
@@ -204,7 +205,7 @@ export default class Merkle {
   public bufferToInt(buffer: Uint8Array): number {
     let result = 0;
     for (const i of buffer) {
-      result = result * 256 + buffer[i];
+      result = result * 256 + i;
     }
     return result;
   }
