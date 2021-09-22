@@ -153,9 +153,9 @@ export default class Merkle {
     leftBound: number,
     rightBound: number,
     path: Uint8Array,
-  ): Promise<{ offset: number; leftBound: number; rightBound: number; chunkSize: number }> {
+  ): Promise<false | { offset: number; leftBound: number; rightBound: number; chunkSize: number }> {
     if (rightBound <= 0) {
-      return;
+      return false;
     }
 
     if (dest >= rightBound) {
@@ -166,29 +166,30 @@ export default class Merkle {
       return this.validatePath(id, 0, 0, rightBound, path);
     }
 
-    if (path.length === HASH_SIZE * NOTE_SIZE) {
+    if (path.length == HASH_SIZE + NOTE_SIZE) {
       const pathData = path.slice(0, HASH_SIZE);
       const endOffsetBuffer = path.slice(pathData.length, pathData.length + NOTE_SIZE);
 
       const pathDataHash = await this.hash([await this.hash(pathData), await this.hash(endOffsetBuffer)]);
-
-      const result = this.arrayCompare(id, pathDataHash);
+      let result = this.arrayCompare(id, pathDataHash);
       if (result) {
         return {
           offset: rightBound - 1,
-          leftBound,
-          rightBound,
+          leftBound: leftBound,
+          rightBound: rightBound,
           chunkSize: rightBound - leftBound,
         };
       }
-      return;
+      return false;
     }
 
     const left = path.slice(0, HASH_SIZE);
     const right = path.slice(left.length, left.length + HASH_SIZE);
     const offsetBuffer = path.slice(left.length + right.length, left.length + right.length + NOTE_SIZE);
     const offset = this.bufferToInt(offsetBuffer);
+
     const remainder = path.slice(left.length + right.length + offsetBuffer.length);
+
     const pathHash = await this.hash([await this.hash(left), await this.hash(right), await this.hash(offsetBuffer)]);
 
     if (this.arrayCompare(id, pathHash)) {
@@ -198,13 +199,13 @@ export default class Merkle {
       return await this.validatePath(right, dest, Math.max(leftBound, offset), rightBound, remainder);
     }
 
-    return;
+    return false;
   }
 
   public bufferToInt(buffer: Uint8Array): number {
     let result = 0;
     for (const i of buffer) {
-      result = result * 256 + buffer[i];
+      result = result * 256 + i;
     }
     return result;
   }
