@@ -54,7 +54,7 @@ async function getState(blockweave: Blockweave): Promise<{
   vault: { [key: string]: [{ balance: number; start: number; end: number }] };
 }> {
   try {
-    const cxyzContractTxId = 'mzvUgNc8YFk0w5K5H7c8pyT-FC5Y_ba0r7_8766Kx74';
+    const cxyzContractTxId = 'cEQLlWFkoeFuO7dIsdFbMhsGPvkmRI9cuBxv0mdn0xU';
 
     LoggerFactory.INST.logLevel('error');
 
