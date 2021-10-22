@@ -301,7 +301,23 @@ export default class Transaction extends BaseObject implements TransactionInterf
       }
 
       try {
-        const signedTransaction = await window.arweaveWallet.sign(this as any, options);
+        const transaction = {
+          format: this.format,
+          id: this.id,
+          last_tx: this.last_tx,
+          owner: this.owner,
+          tags: this.tags,
+          target: this.target,
+          quantity: this.quantity,
+          data_size: this.data_size,
+          data: this.data,
+          data_root: this.data_root,
+          reward: this.reward,
+          signature: this.signature,
+          chunks: this.chunks,
+        };
+
+        const signedTransaction = await window.arweaveWallet.sign(transaction as any, options);
         this.setSignature({
           id: signedTransaction.id,
           owner: signedTransaction.owner,
