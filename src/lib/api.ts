@@ -10,6 +10,14 @@ export default class Api {
     return this._config;
   }
 
+  /**
+   * @deprecated Use `api.config` instead
+   * @returns {ApiConfigInterface} - The API configuration.
+   */
+  public getConfig(): ApiConfigInterface {
+    return this._config;
+  }
+
   constructor(config: ApiConfigInterface = {}, trustedHosts?: string[]) {
     this._config = this.mergeDefaults(config);
     this.trustedHosts = trustedHosts || this.trustedHosts;
@@ -132,7 +140,7 @@ export default class Api {
         config.protocol = match[1];
         config.host = match[2];
         config.port = +match[3] || (config.protocol === 'https' ? 443 : 80);
-        config.url = config.url.replace(':80', '').replace(':443', '');
+        config.url = config.url.replace(/:80$/gm, '').replace(/:443$/gm, '');
       } else {
         config.url = 'https://arweave.net';
         return this.mergeDefaults(config);

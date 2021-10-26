@@ -1,6 +1,7 @@
 import { JWKInterface } from '../faces/lib/wallet';
 import CryptoInterface, { SignatureOptions } from '../faces/utils/crypto';
 import { concatBuffers, stringToBuffer } from './buffer';
+import { webcrypto } from 'crypto';
 
 export default class CryptoDriver implements CryptoInterface {
   public readonly keyLength = 4096;
@@ -14,8 +15,8 @@ export default class CryptoDriver implements CryptoInterface {
     }
 
     if (!this.driver) {
-      const crypto = require('crypto').webcrypto;
-      this.driver = crypto.subtle;
+      // @ts-ignore
+      this.driver = webcrypto.subtle;
     }
   }
 

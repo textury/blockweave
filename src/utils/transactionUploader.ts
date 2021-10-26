@@ -1,12 +1,11 @@
-import Transaction from '../lib/transaction';
-import Api from '../lib/api';
-import { b64UrlToBuffer } from './buffer';
-import { SerializedUploader } from '../faces/utils/transactionUploader';
-import Merkle from './merkle';
 import { AxiosResponse } from 'axios';
+import Blockweave from '../blockweave';
 import CryptoInterface from '../faces/utils/crypto';
-import selectWeightedHolder from './fee';
-import Arpi from '../arpi';
+import { SerializedUploader } from '../faces/utils/transactionUploader';
+import Api from '../lib/api';
+import Transaction from '../lib/transaction';
+import { b64UrlToBuffer } from './buffer';
+import Merkle from './merkle';
 
 // Maximum amount of chunks we will upload in the body.
 const MAX_CHUNKS_IN_BODY = 1;
@@ -43,7 +42,7 @@ export class TransactionUploader {
   public lastResponseStatus: number = 0;
   public lastResponseError: string = '';
 
-  private arpi: Arpi;
+  private blockweave: Blockweave;
   private crypto: CryptoInterface;
   private merkle: Merkle;
 
@@ -63,8 +62,8 @@ export class TransactionUploader {
     return Math.trunc((this.uploadedChunks / this.totalChunks) * 100);
   }
 
-  constructor(arpi: Arpi, transaction: Transaction | SerializedUploader | string, crypto: CryptoInterface) {
-    this.arpi = arpi;
+  constructor(blockweave: Blockweave, transaction: Transaction | SerializedUploader | string, crypto: CryptoInterface) {
+    this.blockweave = blockweave;
     this.crypto = crypto;
     this.merkle = new Merkle();
 
@@ -77,7 +76,7 @@ export class TransactionUploader {
       }
       // Make a copy of transaction, zeroing the data so we can serialize.
       this.data = transaction.data;
-      this.transaction = new Transaction(Object.assign({}, transaction, { data: new Uint8Array(0) }), this.arpi);
+      this.transaction = new Transaction(Object.assign({}, transaction, { data: new Uint8Array(0) }), this.blockweave);
     }
   }
 
@@ -135,10 +134,12 @@ export class TransactionUploader {
     }
 
     // Catch network errors and turn them into objects with status -1 and an error message.
-    const res = await this.arpi.api.post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data)).catch((e) => {
-      console.error(e.message);
-      return { status: -1, data: { error: e.message } };
-    });
+    const res = await this.blockweave.api
+      .post(`chunk`, this.transaction.getChunk(this.chunkIndex, this.data))
+      .catch((e) => {
+        console.error(e.message);
+        return { status: -1, data: { error: e.message } };
+      });
 
     this.lastRequestTimeEnd = Date.now();
     this.lastResponseStatus = res.status;
@@ -162,7 +163,7 @@ export class TransactionUploader {
    * @param data
    */
   public static async fromSerialized(
-    arpi: Arpi,
+    blockweave: Blockweave,
     serialized: SerializedUploader,
     data: Uint8Array,
     crypto: CryptoInterface,
@@ -174,7 +175,7 @@ export class TransactionUploader {
     // Everything looks ok, reconstruct the TransactionUpload,
     // prepare the chunks again and verify the data_root matches
 
-    const upload = new TransactionUploader(arpi, new Transaction(serialized.transaction, arpi), crypto);
+    const upload = new TransactionUploader(blockweave, new Transaction(serialized.transaction, blockweave), crypto);
 
     // Copy the serialized upload information, and data passed in.
     upload.chunkIndex = serialized.chunkIndex;
@@ -242,7 +243,7 @@ export class TransactionUploader {
       // Post the transaction with data.
       this.transaction.data = this.data;
       try {
-        res = await this.arpi.api.post(`tx`, this.transaction);
+        res = await this.blockweave.api.post(`tx`, this.transaction);
       } catch (e) {
         console.error(e);
         res = { status: -1, data: { error: e.message } };
@@ -264,7 +265,7 @@ export class TransactionUploader {
     }
 
     // Post the transaction with no data.
-    res = await this.arpi.api.post(`tx`, this.transaction);
+    res = await this.blockweave.api.post(`tx`, this.transaction);
     this.lastRequestTimeEnd = Date.now();
     this.lastResponseStatus = res.status;
     if (!(res.status >= 200 && res.status < 300)) {
@@ -288,7 +289,7 @@ export class TransactionUploader {
     let uploader!: TransactionUploader;
 
     if (upload instanceof Transaction) {
-      uploader = new TransactionUploader(this.arpi, upload, this.crypto);
+      uploader = new TransactionUploader(this.blockweave, upload, this.crypto);
     } else {
       if (data instanceof ArrayBuffer) {
         data = new Uint8Array(data);
@@ -299,11 +300,11 @@ export class TransactionUploader {
       }
 
       if (typeof upload === 'string') {
-        upload = await TransactionUploader.fromTransactionId(this.arpi.api, upload);
+        upload = await TransactionUploader.fromTransactionId(this.blockweave.api, upload);
       }
 
       // upload should be a serialized upload.
-      uploader = await TransactionUploader.fromSerialized(this.arpi, upload, data as Uint8Array, this.crypto);
+      uploader = await TransactionUploader.fromSerialized(this.blockweave, upload, data as Uint8Array, this.crypto);
     }
 
     return uploader;

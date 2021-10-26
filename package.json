@@ -1,14 +1,18 @@
 {
-  "name": "arpi",
-  "version": "1.0.0",
-  "main": "dist/arpi.js",
-  "repository": "https://github.com/textury/arpi.git",
+  "name": "blockweave",
+  "version": "1.0.17",
+  "main": "dist/blockweave.js",
+  "repository": "https://github.com/textury/blockweave.git",
   "author": "Cedrik <cedrik.git@tryninja.io>",
   "license": "MIT",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
-    "build": "tsc",
+    "prebuild": "rimraf dist",
+    "build": "tsc && ts-node build.ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "test": "yarn test:node && yarn test:web",
+    "test": "npm run test:node && npm run test:web",
     "test:node": "jest",
     "test:web": "jest --env=jsdom",
     "lint": "tslint -p tsconfig.json",
@@ -21,22 +25,29 @@
   },
   "dependencies": {
     "arconnect": "^0.2.9",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "bignumber.js": "^9.0.1",
-    "redstone-smartweave": "^0.3.7-alpha.1"
+    "redstone-smartweave": "^0.3.10-alpha.3",
+    "util": "^0.12.4"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "@types/node": "^15.12.2",
-    "jest": "^27.0.4",
+    "@swc/cli": "^0.1.49",
+    "@swc/core": "^1.2.84",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.13",
+    "browserslist": "^4.17.0",
+    "esbuild": "^0.12.25",
+    "esbuild-node-builtins": "^0.1.0",
+    "jest": "^27.1.0",
     "jest-config": "^27.1.0",
-    "prettier": "^2.3.1",
-    "ts-jest": "^27.0.3",
-    "ts-node": "^10.0.0",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1",
     "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
-    "typedoc": "^0.20.36",
-    "typedoc-plugin-markdown": "^3.9.0",
-    "typescript": "^4.3.2"
+    "typedoc": "^0.21.9",
+    "typedoc-plugin-markdown": "^3.10.4",
+    "typescript": "^4.4.2"
   }
 }

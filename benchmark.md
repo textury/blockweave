@@ -1,9 +1,8 @@
 We did a performance comparison using [kelonio](https://www.npmjs.com/package/kelonio), to measure the time it takes to send the same transaction during 100 iterations.
 
-TODO: Update this after adding fees
-The final results are a difference of **74% (1,046 ms)**:
+The final results are a difference of **67% (974 ms)**:
 ```
-arpi: 961 ms
+blockweave: 961 ms
 arweave: 1935ms
 ```
 
@@ -11,20 +10,20 @@ If you want to run it yourself. Here's the code we used:
 ```typescript
 import { measure } from "kelonio";
 import Arweave from 'arweave';
-import Arpi from 'arpi';
+import Blockweave from 'blockweave';
 
 (async () => {
-    const arpi = new Arpi({ url: 'https://arweave.net' });
+    const blockweave = new Blockweave({ url: 'https://arweave.net' });
 
     measure(async () => {
-        const wallet = await arpi.wallets.generate();
+        const wallet = await blockweave.wallets.generate();
 
-        const tx = await arpi.createTransaction({
+        const tx = await blockweave.createTransaction({
             data: 'Hello, World!'
         }, wallet);
         await tx.sign();
         await tx.post();
-    }).then(m => console.log(`Arpi version: ${m.mean} ms`));
+    }).then(m => console.log(`Blockweave version: ${m.mean} ms`));
 
 
     const ar = Arweave.init({
