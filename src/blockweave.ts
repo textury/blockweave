@@ -16,7 +16,7 @@ import * as blockweaveUtils from './utils/buffer';
 import Logging from './utils/logging';
 import Blocks from './lib/blocks';
 
-export default class Blockweave {
+class Blockweave {
   public api: Api;
   public wallets: Wallets;
   public transactions: Transactions;
@@ -91,3 +91,5 @@ declare global {
     Blockweave: typeof Blockweave;
   }
 }
+
+export = Blockweave;
