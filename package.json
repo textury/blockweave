@@ -2,14 +2,17 @@
   "name": "blockweave",
   "version": "1.0.17",
   "main": "dist/blockweave.js",
+  "browser": "web/blockweave.js",
+  "types": "dist/blockweave.d.ts",
   "repository": "https://github.com/textury/blockweave.git",
   "author": "Cedrik <cedrik.git@tryninja.io>",
   "license": "MIT",
   "files": [
-    "dist/**/*"
+    "dist",
+    "web"
   ],
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf dist && rimraf web",
     "build": "tsc && ts-node build.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "npm run test:node && npm run test:web",
