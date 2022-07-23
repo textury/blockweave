@@ -15,6 +15,9 @@ export default class CryptoDriver implements CryptoInterface {
     }
 
     if (!this.driver) {
+      if (typeof webcrypto === 'undefined') {
+        webcrypto = { configurable: false, enumerable: true, get() { return lazyRequire('internal/crypto/webcrypto').crypto; } };
+      }
       // @ts-ignore
       this.driver = webcrypto.subtle;
     }
