@@ -25,7 +25,7 @@ export default class Merkle {
     const lastChunk = chunks.slice(-1)[0];
     if (lastChunk.maxByteRange - lastChunk.minByteRange === 0) {
       chunks.splice(chunks.length - 1, 1);
-      proofs.slice(proofs.length - 1, 1);
+      proofs.splice(proofs.length - 1, 1);
     }
 
     return {
